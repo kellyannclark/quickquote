@@ -1,0 +1,21 @@
+{
+  "name": "quickquote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QuickQuote Monorepo for web, mobile, and backend development",
+  "scripts": {
+    "start:web": "npm run dev --workspace=apps/frontend-web",
+    "start:mobile": "npm start --workspace=apps/frontend-mobile",
+    "start:backend": "npm run dev --workspace=backend"
+  },
+  "workspaces": {
+    "packages": [
+      "apps/frontend-web",
+      "apps/frontend-mobile",
+      "backend"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
