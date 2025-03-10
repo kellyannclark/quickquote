@@ -3,6 +3,7 @@ Team Members:
 Kelly Clark
 Francisco Enoch Balbuena Covarrubias
 Shaira Krystal Baliday Silos
+Sifundo Maphosa
 
 🚀 Features
 ✅ Mobile-first design for easy use in the field
@@ -33,3 +34,8 @@ Backend
 │ └── 📂 backend/ (Node.js + Express API)
 ├── 📄 package.json (Project-wide dependencies)
 ├── 📄 README.md (You're here! 📖)
+
+
+Quotes:
+
+Kelly Clark: "You are never too old to set another goal or to dream a new dream." – C.S. Lewis
