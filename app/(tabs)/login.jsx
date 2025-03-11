@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
+import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
 import quickQuoteLogo from "@/assets/images/react-logo.png"
 import { Link } from '@react-navigation/native';
 
@@ -54,6 +54,7 @@ export default function Login() {
         <View style={styles.formAction}>
             <TouchableOpacity onPress={()=>{
                 // handle onPress
+                Alert.alert('Successfully logged in!')
             }}>
 
             <View style={styles.logBtn}>
@@ -62,6 +63,18 @@ export default function Login() {
             </TouchableOpacity>
 
         </View> {/* End - View Login Button */}
+
+        <TouchableOpacity onPress={()=>{
+                // handle onPress
+            }}>
+
+            <View style={styles.btn}>
+                <View style={styles.regBtn}>
+                    <Text style={styles.regBtnText}>Register Now</Text>    
+                </View>
+                <Text style={styles.regBtnArrow}>&gt;</Text>
+            </View>
+            </TouchableOpacity>
 
       </View> {/* End - View Form */}
     </SafeAreaView>
@@ -73,7 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    marginTop: '30%',
+    margin: '20%',
     marginHorizontal: '20%'
   },
   headerImg:{
@@ -113,11 +126,11 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   form: {
-    marginBottom: 24,
+    marginBottom: 20,
     flex: 1
   },
   formAction: {
-    marginVertical: 24,
+    marginVertical: 20,
   },
   logBtn: {
     backgroundColor: '#38b6ff',
@@ -127,12 +140,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: '10%',
-    width: "50%",
+    width: "60%",
     marginHorizontal: '20%'
   },
   logBtnText:{
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     color: '#fff'
+  },
+  btn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  regBtn: {
+    borderTopStartRadius: 20,
+    borderBottomStartRadius: 20,
+    borderWidth: 2,
+    borderColor: 'grey',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: "80%",
+  },
+  regBtnText:{
+    fontSize: 14,
+    fontWeight: '700',
+    color: 'black'
+  },
+  regBtnArrow: {
+    borderTopEndRadius: 20,
+    borderEndEndRadius: 20,
+    borderColor: 'grey',
+    borderWidth: 2,
+    padding: 9,
+    fontWeight: 700,
+    fontSize: 15
   }
+  
 })
