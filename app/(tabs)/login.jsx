@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
 import quickQuoteLogo from "@/assets/images/logo.png"
 import { Link } from '@react-navigation/native';
@@ -90,10 +90,9 @@ const styles = StyleSheet.create({
     marginHorizontal: '20%'
   },
   headerImg:{
-    width: "50%",
-    height: "12%",
-    alignSelf: 'center',
-    
+    width: 100,
+    height: 100,
+    alignSelf: 'center'
   },
   text: {
     color: 'black',
