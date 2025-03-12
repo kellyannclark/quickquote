@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
-import quickQuoteLogo from "@/assets/images/react-logo.png"
+import quickQuoteLogo from "@/assets/images/logo.png"
 import { Link } from '@react-navigation/native';
 
 
@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
     marginHorizontal: '20%'
   },
   headerImg:{
-    width: '100%',
-    height: '10%',
+    width: "50%",
+    height: "12%",
     alignSelf: 'center',
     
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
-    marginTop:'10%'
+    marginTop:'5%'
   },
   subtext: {
     color: 'grey',
