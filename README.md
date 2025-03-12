@@ -40,3 +40,4 @@ Sifundo Maphosa<br>
 
 Kelly Clark: "You are never too old to set another goal or to dream a new dream." – C.S. Lewis<br><br>
 Shaira Silos: "Rest if you must, but don't quit" (excerpt from the poem "Don't Quit" by Edgar A. Guest)
+Enoch Balbuena: "Success is not final, failure is not fatal: it is the courage to continue that counts." – Winston Churchill
