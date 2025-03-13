@@ -1,21 +1,18 @@
 📌 QuickQuote Mobile App
-
-👥 Team Members:
+👥 Team Members
 Kelly Clark
 Francisco Enoch Balbuena Covarrubias
 Shaira Krystal Baliday Silos
 Sifundo Maphosa
-
 🚀 Features
 ✅ Mobile-first design for easy use in the field
 ✅ Image upload functionality to capture window conditions
-✅ User authentication for secure access
+✅ User authentication for secure access and personalized pricing
 ✅ Customizable pricing structure allowing users to set their own rates
 ✅ Automated window size classification (X-Small, Small, Medium, Large, X-Large)
-✅ Dynamic price calculations based on cleaning type, dirt level, accessibility, and yearly contract discounts
+✅ Dynamic price calculations based on cleaning type, dirt level, accessibility, and contract discounts
 ✅ Database storage for user profiles, pricing, and bid history
 ✅ Quick bid summary display without generating an invoice
-
 
 🛠️ Tech Stack
 Frontend: 📱 React Native / Expo
@@ -24,8 +21,6 @@ Database: 🔥 Firebase Firestore (NoSQL)
 Authentication: 🔐 Firebase Auth/OAuth
 Storage: ☁️ Firebase Storage for image uploads
 Mathematical Calculations: 📊 Backend logic for accurate price generation
-
-
 📂 Project Structure
 📂 quickquote/ (Project Root)
 ├── 📂 app/ (React Native frontend)
