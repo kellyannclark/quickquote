@@ -1,9 +1,11 @@
 📌 QuickQuote Mobile App
+
 👥 Team Members
 Kelly Clark
 Francisco Enoch Balbuena Covarrubias
 Shaira Krystal Baliday Silos
 Sifundo Maphosa
+
 🚀 Features
 ✅ Mobile-first design for easy use in the field
 ✅ Image upload functionality to capture window conditions
@@ -21,6 +23,7 @@ Database: 🔥 Firebase Firestore (NoSQL)
 Authentication: 🔐 Firebase Auth/OAuth
 Storage: ☁️ Firebase Storage for image uploads
 Mathematical Calculations: 📊 Backend logic for accurate price generation
+
 📂 Project Structure
 📂 quickquote/ (Project Root)
 ├── 📂 app/ (React Native frontend)
