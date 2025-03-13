@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
+import { Alert, SafeAreaView, View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native'
 import userIcon from "@/assets/images/user-icon.png"
 import { Link } from '@react-navigation/native';
-
 
 export default function Dashboard() {
   return (
