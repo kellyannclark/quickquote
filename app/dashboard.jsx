@@ -1,15 +1,15 @@
 import { Alert, SafeAreaView, View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native'
 import userIcon from "@/assets/images/user-icon.png"
 import { Link } from '@react-navigation/native';
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faUser, faUserCircle } from "@fortawesome/free-regular-svg-icons";
+import { faUserCheck } from '@fortawesome/free-solid-svg-icons';
+
 
 export default function Dashboard() {
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-      source={userIcon}
-      style={styles.headerImg}
-      alt="User Icon"
-      />
+       <FontAwesomeIcon icon={faUserCircle} size={50} style={styles.headerImg} />
 
        <Text style={styles.text}>Welcome, User!</Text>
       
@@ -64,13 +64,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    margin: '20%',
+    margin: '10%',
     marginHorizontal: '20%'
   },
   headerImg:{
-    width: 100,
-    height: 100,
-    alignSelf: 'center'
+    color: "grey",
+    alignSelf: 'center',
+    zIndex: 1,
 
   },
   text: {

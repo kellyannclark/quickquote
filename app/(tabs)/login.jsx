@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    margin: "20%",
+    margin: "10%",
     marginHorizontal: "20%",
   },
   headerImg: {

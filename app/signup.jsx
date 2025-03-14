@@ -25,7 +25,7 @@ export default function Dashboard() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.userIconBg}>
-        <FontAwesomeIcon icon={faUser} style={styles.userIcon} />
+        <FontAwesomeIcon icon={faUser} size={30} style={styles.userIcon} />
       </View>
       <Text style={styles.text}>Sign Up</Text>
       <View style={styles.form}>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    margin: "20%",
+    margin: "10%",
     marginHorizontal: "10%",
   },
   userIcon: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   userIconBg: {
     backgroundColor: "lightgrey",
     borderRadius: 60,
-    padding: 30,
+    padding: 20,
     alignSelf: "center",
   },
   text: {
