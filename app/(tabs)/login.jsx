@@ -15,7 +15,7 @@ import { Link } from "expo-router";
 
 export default function Login() {
   const [form, setForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   return (
@@ -24,16 +24,16 @@ export default function Login() {
       <Text style={styles.text}>Window cleaning bids without the pane.</Text>
       <View style={styles.form}>
         <View style={styles.input}>
-          {/* Username */}
+          {/* Email */}
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
             style={styles.inputControl}
-            placeholder="Username"
+            placeholder="Email"
             placeholderTextcolor="grey"
-            value={form.username}
-            onChangeText={(username) => setForm({ ...form, username })}
+            value={form.email}
+            onChangeText={(email) => setForm({ ...form, email })}
           ></TextInput>
 
           {/* Password */}
