@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
+import { Alert, SafeAreaView, View, Text, TextInput, StyleSheet, Image, Pressable, TouchableOpacity} from 'react-native'
 import quickQuoteLogo from "@/assets/images/logo.png"
-import { Link } from '@react-navigation/native';
+import { Link } from "expo-router"
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Login() {
@@ -9,6 +10,7 @@ export default function Login() {
     username: '',
     password: ''
    })
+   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -46,7 +48,7 @@ export default function Login() {
             </TextInput>
 
             {/* Forgot Password */}
-            <Link style={styles.subtext}>Forgot Password</Link>
+            <Link href="/" style={styles.subtext}>Forgot Password</Link>
             
         </View>  {/* End - Input */}
         
@@ -58,24 +60,22 @@ export default function Login() {
             }}>
 
             <View style={styles.logBtn}>
-                <Text style={styles.logBtnText}>Login</Text>
+                <Link href="/dashboard" style={styles.logBtnText}>Login</Link>
             </View>
             </TouchableOpacity>
 
         </View> {/* End - View Login Button */}
 
-        <TouchableOpacity onPress={()=>{
-                // handle onPress
-            }}>
-
-            <View style={styles.btn}>
-                <View style={styles.regBtn}>
-                    <Text style={styles.regBtnText}>Register Now</Text>    
-                </View>
-                <Text style={styles.regBtnArrow}>&gt;</Text>
-            </View>
-            </TouchableOpacity>
-
+        <TouchableOpacity onPress={() => Alert.alert("Sign Up")}>  {/* Navigate to 'SignUp' screen */}
+      <View style={styles.btn}>
+        <View style={styles.regBtn}>
+        
+            <Link href="../signup" style={styles.regBtnText}>Sign  Up Now</Link>
+        
+        </View>
+        <Text style={styles.regBtnArrow}>&gt;</Text>
+      </View>
+    </TouchableOpacity>
       </View> {/* End - View Form */}
     </SafeAreaView>
   );
