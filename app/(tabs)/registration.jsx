@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
     marginHorizontal: "10%",
   },
   userIcon: {
-    flex: 1,
     alignSelf: "center",
     color: "#fff",
   },
@@ -205,12 +204,9 @@ const styles = StyleSheet.create({
   name: {
     flexDirection: "row",
     justifyContent: "space-between",
-    
-
   },
   inputWithIcon: {
     position: "relative", // This allows positioning the icon inside the input
-
     width: "50%"
   },
   icon: {
