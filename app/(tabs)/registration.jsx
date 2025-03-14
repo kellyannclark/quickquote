@@ -38,7 +38,7 @@ export default function Dashboard() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="default"
-                style={[styles.inputControl, styles.marginRight]}
+                style={[styles.inputControl, styles.marginRName]}
                 placeholder={"First Name"}
                 placeholderTextColor="grey"
                 value={form.firstName}
@@ -53,7 +53,7 @@ export default function Dashboard() {
                 autoCapitalize="words"
                 autoCorrect={false}
                 keyboardType="default"
-                style={[styles.inputControl, styles.marginRight]}
+                style={[styles.inputControl, styles.marginLName]}
                 placeholder="Last Name"
                 placeholderTextColor="grey"
                 value={form.lastName}
@@ -181,8 +181,11 @@ const styles = StyleSheet.create({
   formAction: {
     marginVertical: 20,
   },
-  marginRight: {
+  marginRName: {
     marginRight: 5,
+    paddingLeft: 30
+  },
+  marginLName: {
     paddingLeft: 30
   },
   signUpBtn: {
