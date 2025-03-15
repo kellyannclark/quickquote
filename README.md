@@ -36,3 +36,4 @@ Mathematical Calculations: 📊 Backend logic for accurate price generation
 Kelly Clark: "You are never too old to set another goal or to dream a new dream." – C.S. Lewis
 Shaira Silos: "Rest if you must, but don't quit." – Edgar A. Guest
 Enoch Balbuena: "Success is not final, failure is not fatal: it is the courage to continue that counts." – Winston Churchill
+Sifundo Maphosa: "Success is not about waiting for the perfect moment. It is about making the moment perfect with action."
