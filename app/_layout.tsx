@@ -12,19 +12,25 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  // 🔹 Call useFonts FIRST before any conditions
+  const [fontsLoaded] = useFonts({
+    "Poppins-Regular": require('@/assets/fonts/Poppins-Regular.ttf'),
+    "Poppins-SemiBold": require('@/assets/fonts/Poppins-SemiBold.ttf'),
+    "Roboto_Condensed-Black": require('@/assets/fonts/Roboto_Condensed-Black.ttf'),
+    "Roboto_Condensed-Thin": require('@/assets/fonts/Roboto_Condensed-Thin.ttf'),
   });
 
+  const colorScheme = useColorScheme();
+
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded]);
 
-  if (!loaded) {
-    return null;
+  // 🔹 Ensure fonts are loaded before returning the UI
+  if (!fontsLoaded) {
+    return null; // Prevents rendering before fonts are ready
   }
 
   return (

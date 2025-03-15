@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 
 const CustomizeRatesScreen = () => {
   const [rates, setRates] = useState({
@@ -10,7 +9,9 @@ const CustomizeRatesScreen = () => {
     baseLG: "",
     baseXL: "",
     interiorPercentage: "",
-    dirtLevel: "1", // Default dirt level
+    dirtLevel1: "",
+    dirtLevel2: "",
+    dirtLevel3: "",
     accessibility: "",
     contractDiscount: "",
     extraCharge: "",
@@ -31,7 +32,9 @@ const CustomizeRatesScreen = () => {
       baseLG: "",
       baseXL: "",
       interiorPercentage: "",
-      dirtLevel: "1",
+      dirtLevel1: "",
+      dirtLevel2: "",
+      dirtLevel3: "",
       accessibility: "",
       contractDiscount: "",
       extraCharge: "",
@@ -46,7 +49,7 @@ const CustomizeRatesScreen = () => {
       <View style={styles.rowContainer}>
         {["XS", "SM", "MD", "LG", "XL"].map((size) => (
           <View key={size} style={styles.halfWidthInputContainer}>
-            <Text>Base Price ({size})</Text>
+            <Text style={styles.text}>Base Price ({size})</Text>
             <TextInput
               style={styles.smallInput}
               keyboardType="numeric"
@@ -59,7 +62,7 @@ const CustomizeRatesScreen = () => {
 
       {/* Interior Window Percentage */}
       <View style={styles.inputContainer}>
-        <Text>Interior Window Percentage (%)</Text>
+        <Text style={styles.text}>Interior Window Percentage (%)</Text>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
@@ -68,27 +71,46 @@ const CustomizeRatesScreen = () => {
         />
       </View>
 
-      {/* Dirt Level Adjustment (Dropdown) */}
+      {/* Dirt Level Adjustments (Three Input Fields) */}
       <View style={styles.inputContainer}>
-        <Text>Dirt Level Adjustment</Text>
-        <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={rates.dirtLevel}
-          onValueChange={(value) => handleInputChange("dirtLevel", value)}
-          style={styles.picker}
-          mode="dropdown" 
-        >
-          <Picker.Item label="Level 1 (Light Dirt)" value="1" />
-          <Picker.Item label="Level 2 (Medium Dirt)" value="2" />
-          <Picker.Item label="Level 3 (Heavy Dirt)" value="3" />
-        </Picker>
-
+        <Text style={styles.text}>Dirt Level Adjustment (%)</Text>
+        <View style={styles.rowContainer}>
+          <View style={styles.thirdWidthInputContainer}>
+            <Text style={styles.text}>Level 1</Text>
+            <TextInput
+              style={styles.smallInput}
+              keyboardType="numeric"
+              value={rates.dirtLevel1}
+              onChangeText={(value) => handleInputChange("dirtLevel1", value)}
+              placeholder="e.g. 5%"
+            />
+          </View>
+          <View style={styles.thirdWidthInputContainer}>
+            <Text style={styles.text}>Level 2</Text>
+            <TextInput
+              style={styles.smallInput}
+              keyboardType="numeric"
+              value={rates.dirtLevel2}
+              onChangeText={(value) => handleInputChange("dirtLevel2", value)}
+              placeholder="e.g. 10%"
+            />
+          </View>
+          <View style={styles.thirdWidthInputContainer}>
+            <Text style={styles.text}>Level 3</Text>
+            <TextInput
+              style={styles.smallInput}
+              keyboardType="numeric"
+              value={rates.dirtLevel3}
+              onChangeText={(value) => handleInputChange("dirtLevel3", value)}
+              placeholder="e.g. 15%"
+            />
+          </View>
         </View>
       </View>
 
       {/* Accessibility Charge */}
       <View style={styles.inputContainer}>
-        <Text>Accessibility Charge (%)</Text>
+        <Text style={styles.text}>Accessibility Charge (%)</Text>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
@@ -99,7 +121,7 @@ const CustomizeRatesScreen = () => {
 
       {/* Contract Discount */}
       <View style={styles.inputContainer}>
-        <Text>Contract Discount ($)</Text>
+        <Text style={styles.text}>Contract Discount ($)</Text>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
@@ -110,7 +132,7 @@ const CustomizeRatesScreen = () => {
 
       {/* Extra Charge */}
       <View style={styles.inputContainer}>
-        <Text>Extra Charge ($)</Text>
+        <Text style={styles.text}>Extra Charge ($)</Text>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
@@ -132,9 +154,10 @@ const CustomizeRatesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
     paddingVertical: 20,
     backgroundColor: "#f8f8f8",
+  
   },
   title: {
     fontSize: 22,
@@ -142,14 +165,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
     marginTop: 50,
+    fontFamily: "Poppins-SemiBold",
+  },
+  text: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "black",
   },
   rowContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // Allows items to move to the next line
+    flexWrap: "wrap",
     justifyContent: "space-between",
   },
   halfWidthInputContainer: {
-    width: "48%", // Two inputs per row
+    width: "48%",
+    marginBottom: 15,
+  },
+  thirdWidthInputContainer: {
+    width: "30%",
     marginBottom: 15,
   },
   smallInput: {
@@ -159,6 +192,7 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 14,
     backgroundColor: "white",
+    fontFamily: "Roboto_Condensed-Thin",
   },
   inputContainer: {
     marginBottom: 15,
@@ -170,26 +204,12 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     backgroundColor: "white",
-    
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    backgroundColor: "white",
-    overflow: "hidden",  // ✅ Ensures correct rendering
-    width: "100%",  // ✅ Ensures the dropdown is visible
-  },
-  
-  picker: {
-    height: 50,
-    width: "100%",
   },
   buttonContainer: {
     marginTop: 20,
   },
   spacing: {
-    height: 10, 
+    height: 10,
   },
 });
 
