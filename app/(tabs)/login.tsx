@@ -54,7 +54,7 @@ export default function Login() {
           <Text style={styles.subtext}>Forgot Password</Text>
           </TouchableOpacity>
           
-        </View>{" "}
+        </View>
         {/* End - Input */}
         {/* Login Button */}
         <View style={styles.formAction}>
@@ -65,11 +65,11 @@ export default function Login() {
                 Login
               </Text>
           </TouchableOpacity>
-        </View>{" "}
+        </View>
         {/* End - View Login Button */}
         <TouchableOpacity 
         onPress={() => router.push({ pathname: '../signup' })}>
-          {" "}
+         
           {/* Navigate to 'SignUp' screen */}
           <View style={styles.btn}>
             <View style={styles.regBtn}>
@@ -78,7 +78,7 @@ export default function Login() {
             <Text style={styles.regBtnArrow}>&gt;</Text>
           </View>
         </TouchableOpacity>
-      </View>{" "}
+      </View>
       {/* End - View Form */}
     </SafeAreaView>
   );
