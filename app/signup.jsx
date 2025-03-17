@@ -19,7 +19,7 @@ export default function Dashboard() {
     businessName: "",
     confirmPassword: "",
     email: "",
-    password: "",
+    password: ""
   });
 
   return (
