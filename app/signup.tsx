@@ -33,7 +33,7 @@ export default function Dashboard() {
              <View style={styles.inputWithIcon}>
               <FontAwesomeIcon icon={faUser} style={styles.icon} />
               <TextInput
-                autoCapitalize="none"
+                autoCapitalize="words"
                 autoCorrect={false}
                 keyboardType="default"
                 style={[styles.inputControl, styles.marginRName]}
@@ -145,11 +145,10 @@ const styles = StyleSheet.create({
   inputControl: {
     height: 44,
     backgroundColor: "#fff",
-    padding: 20,
+    paddingHorizontal: 20,
     borderRadius: 20,
     borderColor: "grey",
     borderWidth: 2,
-    fontSize: 15,
     fontWeight: "500",
     color: "#222",
     marginTop: 10,
