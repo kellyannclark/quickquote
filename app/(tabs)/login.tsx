@@ -10,10 +10,12 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import quickQuoteLogo from "@/assets/images/logo.png";
-import { Link } from "expo-router";
+import { useRouter } from 'expo-router';
 
 export default function Login() {
+  const router = useRouter();
+  const quickQuoteLogo = require('../../assets/images/logo.png');
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -31,7 +33,7 @@ export default function Login() {
             keyboardType="email-address"
             style={styles.inputControl}
             placeholder="Email"
-            placeholderTextcolor="grey"
+            placeholderTextColor="grey"
             value={form.email}
             onChangeText={(email) => setForm({ ...form, email })}
           ></TextInput>
@@ -41,41 +43,37 @@ export default function Login() {
             secureTextEntry
             style={styles.inputControl}
             placeholder="Password"
-            placeholderTextcolor="grey"
+            placeholderTextColor="grey"
             value={form.password}
             onChangeText={(password) => setForm({ ...form, password })}
           ></TextInput>
 
           {/* Forgot Password */}
-          <Link href="/" style={styles.subtext}>
-            Forgot Password
-          </Link>
+          <TouchableOpacity
+          onPress={() => router.push({ pathname: '/' })}>
+          <Text style={styles.subtext}>Forgot Password</Text>
+          </TouchableOpacity>
+          
         </View>{" "}
         {/* End - Input */}
         {/* Login Button */}
         <View style={styles.formAction}>
           <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-              Alert.alert("Successfully logged in!");
-            }}
-          >
-            <View style={styles.logBtn}>
-              <Link href="/dashboard" style={styles.logBtnText}>
+             style={styles.logBtn}
+            onPress={() => router.push({ pathname: '/dashboard' })}>
+              <Text style={styles.logBtnText}>
                 Login
-              </Link>
-            </View>
+              </Text>
           </TouchableOpacity>
         </View>{" "}
         {/* End - View Login Button */}
-        <TouchableOpacity onPress={() => Alert.alert("Sign Up")}>
+        <TouchableOpacity 
+        onPress={() => router.push({ pathname: '../signup' })}>
           {" "}
           {/* Navigate to 'SignUp' screen */}
           <View style={styles.btn}>
             <View style={styles.regBtn}>
-              <Link href="../signup" style={styles.regBtnText}>
-                Sign Up Now
-              </Link>
+                <Text>Sign Up Now</Text>
             </View>
             <Text style={styles.regBtnArrow}>&gt;</Text>
           </View>
@@ -99,7 +97,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   text: {
-    color: "black",
     fontSize: 25,
     textAlign: "center",
     marginTop: "5%",
