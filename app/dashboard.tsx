@@ -1,8 +1,6 @@
-import { Alert, SafeAreaView, View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native'
-import { Link } from '@react-navigation/native';
+import { Alert, SafeAreaView, View, Text, StyleSheet, TouchableOpacity} from 'react-native'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faUser, faUserCircle } from "@fortawesome/free-regular-svg-icons";
-import { faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
 import { useRouter } from 'expo-router';
 
 export default function Dashboard() {
@@ -13,46 +11,24 @@ export default function Dashboard() {
 
        <Text style={styles.text}>Welcome, User!</Text>
       
-        
-        {/* Make q Quote Button */}
-        <View style={styles.formAction}>
-            <TouchableOpacity onPress={()=>
+        {/* Make a Quote Button */}
+        <TouchableOpacity style={[styles.createQuoteBtn, styles.btn]} onPress={()=>
                 router.push({ pathname: '/(tabs)/customize-rates' })}>
-
-            <View style={styles.createQuoteBtn}>
                 <Text style={styles.createQuoteBtnText}>Make a Quote</Text>
-            </View>
-            </TouchableOpacity>
-
-        </View> {/* End - Make a Quote Button */}
+        </TouchableOpacity>
+           {/* End - Make a Quote Button */}
           
-        {/* MY Quptes Button */}
-        <View style={styles.formAction}>
-            <TouchableOpacity onPress={()=>{
-                // handle onPress
-                Alert.alert('My Quotes!')
-            }}>
-
-            <View style={styles.btn}>
-                <Text style={styles.btnText}>My Quotes</Text>
-            </View>
+        {/* My Quotes Button */}
+            <TouchableOpacity style={styles.btn} onPress={()=> router.push({ pathname: '/(tabs)/my-quotes' })}>
+            <Text style={styles.btnText}>My Quotes</Text>
             </TouchableOpacity>
-
-        </View> {/* End - My Quotes Button */}
+           {/* End - My Quotes Button */}
 
         {/* Customize Rates Button */}
-        <View style={styles.formAction}>
-            <TouchableOpacity onPress={()=>{
-                // handle onPress
-                Alert.alert('Customize Rates!')
-            }}>
-
-            <View style={styles.btn}>
-                <Text style={styles.btnText}>Customize Rates</Text>
-            </View>
+        <TouchableOpacity style={styles.btn} onPress={()=> router.push({ pathname: '/(tabs)/customize-rates' })}>
+            <Text style={styles.btnText}>Customize Rates</Text>
             </TouchableOpacity>
-
-        </View> {/* End - Customize Rates Button */}
+         {/* End - Customize Rates Button */}
     </SafeAreaView>
   );
 }
@@ -104,9 +80,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: '1%',
+    marginTop: '10%',
     width: "90%",
-    marginHorizontal: '5%'
+    marginHorizontal: '5%',
   },
   btnText:{
     fontSize: 14,
