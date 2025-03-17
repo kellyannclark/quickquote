@@ -2,20 +2,17 @@ import { useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 /**
- * To support static rendering, this value needs to be re-calculated on the client side for web
+ * Custom hook to get the color scheme on the web.
+ * Ensures the color scheme is only set after hydration.
+ * Defaults to 'light' mode before hydration is complete.
  */
 export function useColorScheme() {
-  const [hasHydrated, setHasHydrated] = useState(false);
+  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    setHasHydrated(true);
+    const systemScheme = useRNColorScheme();
+    setColorScheme(systemScheme ?? 'light'); // Default to 'light' if undefined
   }, []);
 
-  const colorScheme = useRNColorScheme();
-
-  if (hasHydrated) {
-    return colorScheme;
-  }
-
-  return 'light';
+  return colorScheme;
 }
