@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import {
-  Alert,
   SafeAreaView,
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import { Link } from "expo-router";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+} from "react-native"; import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useRouter } from 'expo-router';
 
@@ -31,10 +28,9 @@ export default function Dashboard() {
       </View>
       <Text style={styles.text}>Sign Up</Text>
       <View style={styles.form}>
-        <View style={styles.input}>
-          <View style={styles.name}>
+          <View style={styles.name}> {/* Name Field */}
             {/* First Name */}
-            <View style={styles.inputWithIcon}>
+             <View style={styles.inputWithIcon}>
               <FontAwesomeIcon icon={faUser} style={styles.icon} />
               <TextInput
                 autoCapitalize="none"
@@ -46,8 +42,7 @@ export default function Dashboard() {
                 value={form.firstName}
                 onChangeText={(firstName) => setForm({ ...form, firstName })}
               />
-            </View>
-
+              </View>
             {/* Last Name */}
             <View style={styles.inputWithIcon}>
               <FontAwesomeIcon icon={faUser} style={styles.icon} />
@@ -61,10 +56,8 @@ export default function Dashboard() {
                 value={form.lastName}
                 onChangeText={(lastName) => setForm({ ...form, lastName })}
               />
-            </View>
+              </View>
           </View> {/* End - name */}
-        </View>
-
         {/* Business Name */}
         <TextInput
           autoCapitalize="words"
@@ -75,7 +68,6 @@ export default function Dashboard() {
           value={form.businessName}
           onChangeText={(businessName) => setForm({ ...form, businessName })}
         />
-
         {/* Email */}
         <TextInput
           autoCapitalize="none"
@@ -87,7 +79,6 @@ export default function Dashboard() {
           value={form.email}
           onChangeText={(email) => setForm({ ...form, email })}
         />
-
         {/* Password */}
         <TextInput
           secureTextEntry
@@ -97,7 +88,6 @@ export default function Dashboard() {
           value={form.password}
           onChangeText={(password) => setForm({ ...form, password })}
         />
-
         {/* Confirm Password */}
         <TextInput
           secureTextEntry
@@ -107,29 +97,22 @@ export default function Dashboard() {
           value={form.confirmPassword}
           onChangeText={(confirmPassword) =>
             setForm({ ...form, confirmPassword })
-          }
-        />
-
-        {/* Sign Up Button */}
-        <View style={styles.formAction}>
-          <TouchableOpacity
-            style={styles.signUpBtn}
-            onPress={() => router.push({ pathname: '/' })}>
-            <Text style={styles.signUpBtnText}>Sign up</Text>
-          </TouchableOpacity>
-
-          {/* Sign in link */}
-            <TouchableOpacity
-            onPress={() => router.push({ pathname: '/(tabs)/login' })}>
-              <Text style={styles.subtext}>Already a member? Sign In</Text>
-            </TouchableOpacity>
-
-        </View> {/* End - Sign Up Button */}
+          }/>
+          {/* Sign Up Button */}
+        <TouchableOpacity
+          style={styles.signUpBtn}
+          onPress={() => router.push({ pathname: '/' })}>
+          <Text style={styles.signUpBtnText}>Sign up</Text>
+        </TouchableOpacity>
+        {/* Sign in link */}
+        <TouchableOpacity
+          onPress={() => router.push({ pathname: '/(tabs)/login' })}>
+          <Text style={styles.subtext}>Already a member? Sign In</Text>
+        </TouchableOpacity>
       </View> {/* End - View Form */}
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -157,10 +140,7 @@ const styles = StyleSheet.create({
     color: "grey",
     fontSize: 13,
     textAlign: "center",
-    marginTop: "5%",
-  },
-  input: {
-    marginTop: 20,
+    marginTop: 10,
   },
   inputControl: {
     height: 44,
@@ -207,6 +187,7 @@ const styles = StyleSheet.create({
   name: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 20
   },
   inputWithIcon: {
     position: "relative", // This allows positioning the icon inside the input

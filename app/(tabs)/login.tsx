@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     color: "grey",
     fontSize: 13,
     textAlign: "center",
-    marginTop: "5%",
+    marginTop: 10,
   },
   input: { marginTop: 20 },
   inputLabel: {
