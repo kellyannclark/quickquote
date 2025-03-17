@@ -11,8 +11,10 @@ import {
 import { Link } from "expo-router";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { useRouter } from 'expo-router';
 
 export default function Dashboard() {
+  const router = useRouter();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -111,19 +113,17 @@ export default function Dashboard() {
         {/* Sign Up Button */}
         <View style={styles.formAction}>
           <TouchableOpacity
-            onPress={() => {
-              Alert.alert("Sign Up!");
-            }}
-          >
-            <View style={styles.signUpBtn}>
-              <Text style={styles.signUpBtnText}>Sign up</Text>
-            </View>
+            style={styles.signUpBtn}
+            onPress={() => router.push({ pathname: '/' })}>
+            <Text style={styles.signUpBtnText}>Sign up</Text>
           </TouchableOpacity>
 
           {/* Sign in link */}
-          <Text style={styles.subtext}>
-            Already a member? <Link href="/login">Sign in</Link>
-          </Text>
+            <TouchableOpacity
+            onPress={() => router.push({ pathname: '/(tabs)/login' })}>
+              <Text style={styles.subtext}>Already a member? Sign In</Text>
+            </TouchableOpacity>
+
         </View> {/* End - Sign Up Button */}
       </View> {/* End - View Form */}
     </SafeAreaView>
