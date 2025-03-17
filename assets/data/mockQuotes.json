@@ -1,0 +1,59 @@
+[
+    {
+      "quoteId": "Q001",
+      "clientName": "John Doe",
+      "date": "2025-03-01",
+      "price": 150,
+      "windowDetails": {
+        "numberOfWindows": 10,
+        "windowTypes": ["Standard", "French"],
+        "pricingBreakdown": {
+          "standardWindows": 100,
+          "frenchWindows": 50
+        }
+      },
+      "images": [
+        "https://via.placeholder.com/300",
+        "https://via.placeholder.com/301",
+        "https://via.placeholder.com/302"
+      ],
+      "notes": "First-time customer."
+    },
+    {
+      "quoteId": "Q002",
+      "clientName": "Jane Smith",
+      "date": "2025-03-03",
+      "price": 200,
+      "windowDetails": {
+        "numberOfWindows": 15,
+        "windowTypes": ["Bay", "Standard"],
+        "pricingBreakdown": {
+          "bayWindows": 120,
+          "standardWindows": 80
+        }
+      },
+      "images": [
+        "https://via.placeholder.com/303",
+        "https://via.placeholder.com/304"
+      ],
+      "notes": "Requested special attention on bay windows."
+    },
+    {
+      "quoteId": "Q003",
+      "clientName": "Michael Johnson",
+      "date": "2025-03-05",
+      "price": 175,
+      "windowDetails": {
+        "numberOfWindows": 12,
+        "windowTypes": ["Standard"],
+        "pricingBreakdown": {
+          "standardWindows": 175
+        }
+      },
+      "images": [
+        "https://via.placeholder.com/305"
+      ],
+      "notes": "Monthly recurring service."
+    }
+  ]
+  
