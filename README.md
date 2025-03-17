@@ -1,4 +1,5 @@
 ## 📌 QuickQuote Mobile App
+This project aims to streamline the bidding process for window cleaning technicians by providing a seamless mobile application that enables quick, accurate, and customizable bid generation. The app will automate price calculations based on window size, cleaning type (interior/exterior), and additional factors such as dirt level and upkeep. By eliminating manual calculations, this tool will help technicians create professional and consistent bids on the go.
 
 ## 👥 Team Members
 Kelly Clark<br>
