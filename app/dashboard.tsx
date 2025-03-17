@@ -1,12 +1,12 @@
 import { Alert, SafeAreaView, View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native'
-import userIcon from "@/assets/images/user-icon.png"
 import { Link } from '@react-navigation/native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUser, faUserCircle } from "@fortawesome/free-regular-svg-icons";
 import { faUserCheck } from '@fortawesome/free-solid-svg-icons';
-
+import { useRouter } from 'expo-router';
 
 export default function Dashboard() {
+  const router = useRouter();
   return (
     <SafeAreaView style={styles.container}>
        <FontAwesomeIcon icon={faUserCircle} size={50} style={styles.headerImg} />
@@ -16,10 +16,8 @@ export default function Dashboard() {
         
         {/* Make q Quote Button */}
         <View style={styles.formAction}>
-            <TouchableOpacity onPress={()=>{
-                // handle onPress
-                Alert.alert('Make a Quote!')
-            }}>
+            <TouchableOpacity onPress={()=>
+                router.push({ pathname: '/(tabs)/customize-rates' })}>
 
             <View style={styles.createQuoteBtn}>
                 <Text style={styles.createQuoteBtnText}>Make a Quote</Text>
