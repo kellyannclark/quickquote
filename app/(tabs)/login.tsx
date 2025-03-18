@@ -7,10 +7,12 @@ import {
   TextInput,
   StyleSheet,
   Image,
-  Pressable,
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from 'expo-router';
+import { auth, db } from "../../backend/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const router = useRouter();
@@ -20,6 +22,39 @@ export default function Login() {
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Error", "Please enter both email and password.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
+      const user = userCredential.user;
+
+
+      const userRef = doc(db, "Users", user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        console.log("User found in Firestore:", userDoc.data());
+        router.push("/dashboard");
+      } else {
+        Alert.alert("Error", "User data not found. Please sign up.");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      Alert.alert("Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Image source={quickQuoteLogo} style={styles.headerImg} alt="Logo" />
@@ -36,7 +71,7 @@ export default function Login() {
             placeholderTextColor="grey"
             value={form.email}
             onChangeText={(email) => setForm({ ...form, email })}
-          ></TextInput>
+          />
 
           {/* Password */}
           <TextInput
@@ -46,40 +81,33 @@ export default function Login() {
             placeholderTextColor="grey"
             value={form.password}
             onChangeText={(password) => setForm({ ...form, password })}
-          ></TextInput>
+          />
 
           {/* Forgot Password */}
-          <TouchableOpacity
-          onPress={() => router.push({ pathname: '/' })}>
-          <Text style={styles.subtext}>Forgot Password</Text>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/' })}>
+            <Text style={styles.subtext}>Forgot Password</Text>
           </TouchableOpacity>
-          
         </View>
-        {/* End - Input */}
+
         {/* Login Button */}
         <View style={styles.formAction}>
-          <TouchableOpacity
-             style={styles.logBtn}
-            onPress={() => router.push({ pathname: '/dashboard' })}>
-              <Text style={styles.logBtnText}>
-                Login
-              </Text>
+          <TouchableOpacity style={styles.logBtn} onPress={handleLogin} disabled={loading}>
+            <Text style={styles.logBtnText}>
+              {loading ? "Logging in..." : "Login"}
+            </Text>
           </TouchableOpacity>
         </View>
-        {/* End - View Login Button */}
-        <TouchableOpacity 
-        onPress={() => router.push({ pathname: '../signup' })}>
-         
-          {/* Navigate to 'SignUp' screen */}
+
+        {/* Navigate to Sign Up */}
+        <TouchableOpacity onPress={() => router.push({ pathname: '../signup' })}>
           <View style={styles.btn}>
             <View style={styles.regBtn}>
-                <Text>Sign Up Now</Text>
+              <Text>Sign Up Now</Text>
             </View>
             <Text style={styles.regBtnArrow}>&gt;</Text>
           </View>
         </TouchableOpacity>
       </View>
-      {/* End - View Form */}
     </SafeAreaView>
   );
 }
@@ -108,9 +136,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   input: { marginTop: 20 },
-  inputLabel: {
-    marginBottom: 8,
-  },
   inputControl: {
     height: 44,
     backgroundColor: "#fff",
@@ -162,18 +187,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "80%",
   },
-  regBtnText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "black",
-  },
   regBtnArrow: {
     borderTopEndRadius: 20,
     borderEndEndRadius: 20,
     borderColor: "grey",
     borderWidth: 2,
     padding: 9,
-    fontWeight: 700,
+    fontWeight: "700",
     fontSize: 15,
   },
 });
