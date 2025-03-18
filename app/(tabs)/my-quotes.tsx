@@ -1,37 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import quotesData from '../../assets/data/mockQuotes.json';
+import { auth, db } from "../../backend/firebaseConfig";
+import { collection, query, where, onSnapshot, DocumentData } from "firebase/firestore";
+
+interface Quote {
+  id: string;
+  quoteId: string;
+  customer: {
+    name: string;
+  };
+  finalPrice: number;
+  createdAt: any;
+}
 
 
 export default function MyQuotesScreen() {
   const router = useRouter();
-
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'date' | 'price'>('date');
-  const [filteredQuotes, setFilteredQuotes] = useState(quotesData);
+  const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let filtered = quotesData.filter(
-      quote =>
-        quote.clientName.toLowerCase().includes(search.toLowerCase()) ||
-        quote.quoteId.toLowerCase().includes(search.toLowerCase())
-    );
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("User is not authenticated.");
+      return;
+    }
 
-    filtered = filtered.sort((a, b) => {
-      if (sortType === 'price') {
-        return a.price - b.price;
-      } else {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      }
+    const q = query(collection(db, "Quotes"), where("userId", "==", user.uid));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let quotes: Quote[] = snapshot.docs.map(doc => {
+        const data = doc.data() as DocumentData;
+        return {
+          id: doc.id,
+          quoteId: data.quoteId || doc.id,
+          customer: data.customer || { name: "Unknown" },
+          finalPrice: data.finalPrice || 0,
+          createdAt: data.createdAt ? data.createdAt.toDate() : new Date()
+        };
+      });
+
+      quotes = quotes.filter(quote =>
+        quote.customer.name.toLowerCase().includes(search.toLowerCase()) ||
+        quote.quoteId.toLowerCase().includes(search.toLowerCase())
+      );
+
+      quotes.sort((a, b) => {
+        if (sortType === 'price') {
+          return a.finalPrice - b.finalPrice;
+        } else {
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        }
+      });
+
+      setFilteredQuotes(quotes);
+      setLoading(false);
     });
 
-    setFilteredQuotes(filtered);
+    return () => unsubscribe();
   }, [search, sortType]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Quotes</Text>
+
       <TextInput
         style={styles.search}
         placeholder="Search by Client Name or Quote ID"
@@ -48,21 +83,25 @@ export default function MyQuotesScreen() {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={filteredQuotes}
-        keyExtractor={(item) => item.quoteId}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.quoteItem}
-            onPress={() => router.push({ pathname: '/quote-detail', params: { quoteId: item.quoteId } })}
-          >
-            <Text style={styles.quoteId}>{item.quoteId}</Text>
-            <Text>{item.clientName}</Text>
-            <Text>{item.date}</Text>
-            <Text>${item.price}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) : (
+        <FlatList
+          data={filteredQuotes}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.quoteItem}
+              onPress={() => router.push({ pathname: '/quote-detail', params: { quoteId: item.id } })}
+            >
+              <Text style={styles.quoteId}>{item.quoteId}</Text>
+              <Text>{item.customer.name}</Text>
+              <Text>{item.createdAt.toLocaleDateString()}</Text>
+              <Text>${item.finalPrice.toFixed(2)}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </View>
   );
 }
