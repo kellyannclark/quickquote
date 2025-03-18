@@ -3,6 +3,7 @@ import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'r
 import { useRouter } from 'expo-router';
 import quotesData from '../../assets/data/mockQuotes.json';
 
+
 export default function MyQuotesScreen() {
   const router = useRouter();
 

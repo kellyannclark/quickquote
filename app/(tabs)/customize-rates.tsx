@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
+
+
 const CustomizeRatesScreen = () => {
   const [rates, setRates] = useState({
     baseXS: "",
@@ -71,7 +73,7 @@ const CustomizeRatesScreen = () => {
               value={rates[key as keyof typeof rates]}
               onChangeText={(value) => handleInputChange(key, value)}
               placeholder="Base Price Per Window"
-              placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+              placeholderTextColor={placeholderColor} 
             />
           </View>
         ))}
@@ -86,7 +88,7 @@ const CustomizeRatesScreen = () => {
           value={rates.interiorPercentage}
           onChangeText={(value) => handleInputChange("interiorPercentage", value)}
           placeholder="ex: 75%"
-          placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
@@ -107,7 +109,7 @@ const CustomizeRatesScreen = () => {
                 value={rates[key as keyof typeof rates]}
                 onChangeText={(value) => handleInputChange(key, value)}
                 placeholder={placeholder}
-                placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+                placeholderTextColor={placeholderColor} 
               />
             </View>
           ))}
@@ -123,7 +125,7 @@ const CustomizeRatesScreen = () => {
           value={rates.accessibility}
           onChangeText={(value) => handleInputChange("accessibility", value)}
           placeholder="ex: 10%"
-          placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
@@ -136,7 +138,7 @@ const CustomizeRatesScreen = () => {
           value={rates.contractDiscount}
           onChangeText={(value) => handleInputChange("contractDiscount", value)}
           placeholder="ex: 10%"
-          placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
@@ -149,7 +151,7 @@ const CustomizeRatesScreen = () => {
           value={rates.extraCharge}
           onChangeText={(value) => handleInputChange("extraCharge", value)}
           placeholder="ex: $25.00"
-          placeholderTextColor={placeholderColor} // ✅ Light gray placeholder text
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
