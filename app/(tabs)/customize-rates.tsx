@@ -45,12 +45,13 @@ const CustomizeRatesScreen = () => {
   };
 
   // Use colors directly
-  const backgroundColor = useThemeColor("background");
-  const textColor = useThemeColor("text");
-  const inputBackground = useThemeColor("background"); 
-  const borderColor = useThemeColor("secondary");
-  const buttonColor = useThemeColor("primary");
+  const backgroundColor = useThemeColor(undefined, "background");
+  const textColor = useThemeColor(undefined, "text");
+  const inputBackground = useThemeColor(undefined, "background");
+  const borderColor = useThemeColor(undefined, "secondary");
+  const buttonColor = useThemeColor(undefined, "primary");
   const placeholderColor = "#A0A0A0"; // Light gray for placeholders
+
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
