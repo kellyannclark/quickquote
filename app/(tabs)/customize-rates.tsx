@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
+
+
 
 const CustomizeRatesScreen = () => {
   const [rates, setRates] = useState({
@@ -41,20 +44,37 @@ const CustomizeRatesScreen = () => {
     });
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Customize Rates</Text>
+  // Use colors directly
+  const backgroundColor = useThemeColor(undefined, "background");
+  const textColor = useThemeColor(undefined, "text");
+  const inputBackground = useThemeColor(undefined, "background");
+  const borderColor = useThemeColor(undefined, "secondary");
+  const buttonColor = useThemeColor(undefined, "primary");
+  const placeholderColor = "#A0A0A0"; // Light gray for placeholders
 
-      {/* Base Prices for Each Window Size in Two Columns */}
-      <View style={styles.rowContainer}>
-        {["XS", "SM", "MD", "LG", "XL"].map((size) => (
-          <View key={size} style={styles.halfWidthInputContainer}>
-            <Text style={styles.text}>Base Price ({size})</Text>
+
+  return (
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>Customize Rates</Text>
+
+ {/* Base Prices for Each Window Size */}
+ <View style={styles.rowContainer}>
+        {[
+          { key: "baseXS", label: "XS Window" },
+          { key: "baseSM", label: "SM Window" },
+          { key: "baseMD", label: "MD Window" },
+          { key: "baseLG", label: "LG Window" },
+          { key: "baseXL", label: "XL Window" },
+        ].map(({ key, label }) => (
+          <View key={key} style={styles.halfWidthInputContainer}>
+            <Text style={[styles.text, { color: textColor }]}>{label}</Text>
             <TextInput
-              style={styles.smallInput}
+              style={[styles.smallInput, { backgroundColor: inputBackground, borderColor }]}
               keyboardType="numeric"
-              value={rates[`base${size}` as keyof typeof rates]}
-              onChangeText={(value) => handleInputChange(`base${size}`, value)}
+              value={rates[key as keyof typeof rates]}
+              onChangeText={(value) => handleInputChange(key, value)}
+              placeholder="Base Price Per Window"
+              placeholderTextColor={placeholderColor} 
             />
           </View>
         ))}
@@ -62,88 +82,83 @@ const CustomizeRatesScreen = () => {
 
       {/* Interior Window Percentage */}
       <View style={styles.inputContainer}>
-        <Text style={styles.text}>Interior Window Percentage (%)</Text>
+        <Text style={[styles.text, { color: textColor }]}>Add Interior Window Cleaning (%)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: inputBackground, borderColor }]}
           keyboardType="numeric"
           value={rates.interiorPercentage}
           onChangeText={(value) => handleInputChange("interiorPercentage", value)}
+          placeholder="ex: 75%"
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
-      {/* Dirt Level Adjustments (Three Input Fields) */}
+      {/* Dirt Level Adjustments */}
       <View style={styles.inputContainer}>
-        <Text style={styles.text}>Dirt Level Adjustment (%)</Text>
+        <Text style={[styles.text, { color: textColor }]}>Add Dirt Level Adjustment (%)</Text>
         <View style={styles.rowContainer}>
-          <View style={styles.thirdWidthInputContainer}>
-            <Text style={styles.text}>Level 1</Text>
-            <TextInput
-              style={styles.smallInput}
-              keyboardType="numeric"
-              value={rates.dirtLevel1}
-              onChangeText={(value) => handleInputChange("dirtLevel1", value)}
-              placeholder="e.g. 5%"
-            />
-          </View>
-          <View style={styles.thirdWidthInputContainer}>
-            <Text style={styles.text}>Level 2</Text>
-            <TextInput
-              style={styles.smallInput}
-              keyboardType="numeric"
-              value={rates.dirtLevel2}
-              onChangeText={(value) => handleInputChange("dirtLevel2", value)}
-              placeholder="e.g. 10%"
-            />
-          </View>
-          <View style={styles.thirdWidthInputContainer}>
-            <Text style={styles.text}>Level 3</Text>
-            <TextInput
-              style={styles.smallInput}
-              keyboardType="numeric"
-              value={rates.dirtLevel3}
-              onChangeText={(value) => handleInputChange("dirtLevel3", value)}
-              placeholder="e.g. 15%"
-            />
-          </View>
+          {[
+            { key: "dirtLevel1", label: "Level 1", placeholder: "ex: 3%" },
+            { key: "dirtLevel2", label: "Level 2", placeholder: "ex: 5%" },
+            { key: "dirtLevel3", label: "Level 3", placeholder: "ex: 7%" },
+          ].map(({ key, label, placeholder }) => (
+            <View key={key} style={styles.thirdWidthInputContainer}>
+              <Text style={[styles.text, { color: textColor }]}>{label}</Text>
+              <TextInput
+                style={[styles.smallInput, { backgroundColor: inputBackground, borderColor }]}
+                keyboardType="numeric"
+                value={rates[key as keyof typeof rates]}
+                onChangeText={(value) => handleInputChange(key, value)}
+                placeholder={placeholder}
+                placeholderTextColor={placeholderColor} 
+              />
+            </View>
+          ))}
         </View>
       </View>
 
       {/* Accessibility Charge */}
       <View style={styles.inputContainer}>
-        <Text style={styles.text}>Accessibility Charge (%)</Text>
+        <Text style={[styles.text, { color: textColor }]}>Add Accessibility Charge (%)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: inputBackground, borderColor }]}
           keyboardType="numeric"
           value={rates.accessibility}
           onChangeText={(value) => handleInputChange("accessibility", value)}
+          placeholder="ex: 10%"
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
-      {/* Contract Discount */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.text}>Contract Discount ($)</Text>
+     {/* Discount */}
+     <View style={styles.inputContainer}>
+        <Text style={[styles.text, { color: textColor }]}>Discount (%)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: inputBackground, borderColor }]}
           keyboardType="numeric"
           value={rates.contractDiscount}
           onChangeText={(value) => handleInputChange("contractDiscount", value)}
+          placeholder="ex: 10%"
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
-      {/* Extra Charge */}
+      {/* Other Charges */}
       <View style={styles.inputContainer}>
-        <Text style={styles.text}>Extra Charge ($)</Text>
+        <Text style={[styles.text, { color: textColor }]}>Other Charges ($)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: inputBackground, borderColor }]}
           keyboardType="numeric"
           value={rates.extraCharge}
           onChangeText={(value) => handleInputChange("extraCharge", value)}
+          placeholder="ex: $25.00"
+          placeholderTextColor={placeholderColor} 
         />
       </View>
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={() => console.log("Rates saved!", rates)} />
+        <Button title="Save" onPress={() => console.log("Rates saved!", rates)} color={buttonColor} />
         <View style={styles.spacing} />
         <Button title="Reset to Default" onPress={resetDefaults} color="red" />
       </View>
@@ -151,13 +166,12 @@ const CustomizeRatesScreen = () => {
   );
 };
 
+// Styles (No Theme-Related Changes Here)
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingVertical: 20,
-    backgroundColor: "#f8f8f8",
-  
   },
   title: {
     fontSize: 22,
@@ -170,7 +184,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontFamily: "Poppins-Regular",
-    color: "black",
   },
   rowContainer: {
     flexDirection: "row",
@@ -187,23 +200,18 @@ const styles = StyleSheet.create({
   },
   smallInput: {
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 5,
     padding: 8,
     fontSize: 14,
-    backgroundColor: "white",
-    fontFamily: "Roboto_Condensed-Thin",
   },
   inputContainer: {
     marginBottom: 15,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
-    backgroundColor: "white",
   },
   buttonContainer: {
     marginTop: 20,
