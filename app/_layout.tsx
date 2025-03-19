@@ -39,6 +39,10 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ title: "Sign Up"}} />
         <Stack.Screen name="dashboard" options={{ title: "Dashboard"}} />
+         <Stack.Screen name="customize-rates" options={{ title: "Customize Rates"}} />
+         <Stack.Screen name="my-quotes" options={{ title: "My Quotes"}} />
+         <Stack.Screen name="edit-quote" options={{ title: "Edit Quote"}} />
+         <Stack.Screen name="quote-detail" options={{ title: "Quote Detail"}} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
