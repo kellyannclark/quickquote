@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { auth, db } from "../../backend/firebaseConfig";
+import { auth, db } from "../backend/firebaseConfig";
 import { collection, query, where, onSnapshot, DocumentData } from "firebase/firestore";
 
 interface Quote {
