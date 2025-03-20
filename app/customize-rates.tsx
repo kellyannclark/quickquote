@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { auth, db } from "../backend/firebaseConfig"; // Import auth and db from your firebaseConfig
-import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods
-// import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import { auth, db } from "../backend/firebaseConfig"; 
+import { doc, getDoc, setDoc } from "firebase/firestore"; 
 import { router } from "expo-router";
 
 const CustomizeRatesScreen = () => {
@@ -27,8 +26,6 @@ const CustomizeRatesScreen = () => {
   // Fetch data from Firestore
   const fetchRatesData = async (userId: string) => {
     try {
-      
-      // Fetch from Firestore
       const ratesDocRef = doc(db, "Rates", userId);
       const ratesDoc = await getDoc(ratesDocRef);
       if (ratesDoc.exists()) {
@@ -142,7 +139,6 @@ const CustomizeRatesScreen = () => {
     }
   };
   
-
   // Use colors directly
   const backgroundColor = useThemeColor(undefined, "background");
   const textColor = useThemeColor(undefined, "text");
@@ -258,18 +254,9 @@ const CustomizeRatesScreen = () => {
         />
       </View>
       
-    {/* Save/Reset Button */}
-      {/* <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
-         <Text style={styles.btnText}>Save</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={resetDefaults}>
-         <Text style={styles.btnText}>Reset</Text>
-      </TouchableOpacity> */}
-
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={saveRatesData} />
+        <Button title="Save" onPress={saveRatesData} color={buttonColor} />
         <View style={styles.spacing} />
         <Button title="Reset to Default" onPress={resetDefaults} color="red" />
       </View>
