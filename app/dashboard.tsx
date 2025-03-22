@@ -53,7 +53,7 @@ export default function Dashboard() {
 
       {/* Make a Quote Button */}
       <TouchableOpacity style={[styles.createQuoteBtn, styles.btn]} onPress={() =>
-        router.push({ pathname: '/customize-rates' })}>
+        router.push({ pathname: '/make-a-quote' })}>
         <Text style={styles.createQuoteBtnText}>Make a Quote</Text>
       </TouchableOpacity>
       {/* End - Make a Quote Button */}
