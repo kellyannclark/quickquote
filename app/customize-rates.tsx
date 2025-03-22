@@ -3,7 +3,6 @@ import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert, Touchable
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { auth, db } from "../backend/firebaseConfig"; // Import auth and db from your firebaseConfig
 import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods
-// import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { router } from "expo-router";
 
 const CustomizeRatesScreen = () => {
@@ -22,12 +21,12 @@ const CustomizeRatesScreen = () => {
     extraCharge: "",
   });
 
+  const [totalPrice, setTotalPrice] = useState(0); // State to store the total price
   const [loading, setLoading] = useState(true);  // To handle loading state
 
   // Fetch data from Firestore
   const fetchRatesData = async (userId: string) => {
     try {
-      
       // Fetch from Firestore
       const ratesDocRef = doc(db, "Rates", userId);
       const ratesDoc = await getDoc(ratesDocRef);
@@ -47,7 +46,6 @@ const CustomizeRatesScreen = () => {
           contractDiscount: data?.contractDiscount || "",
           extraCharge: data?.extraCharge || "",
         });
-        
       } else {
         console.log("No data found for this user.");
       }
@@ -70,11 +68,49 @@ const CustomizeRatesScreen = () => {
   }, []);
 
   const handleInputChange = (key: string, value: string) => {
-    setRates(prevRates=> ({
+    setRates(prevRates => ({
       ...prevRates,
       [key]: value,
     }));
   };
+
+  // Function to calculate the total price
+  const calculateTotalPrice = () => {
+    const basePrices = [
+      parseFloat(rates.baseXS) || 0,
+      parseFloat(rates.baseSM) || 0,
+      parseFloat(rates.baseMD) || 0,
+      parseFloat(rates.baseLG) || 0,
+      parseFloat(rates.baseXL) || 0,
+    ];
+
+    const interiorPercentage = parseFloat(rates.interiorPercentage) || 0;
+    const dirtLevelAdjustments = [
+      parseFloat(rates.dirtLevel1) || 0,
+      parseFloat(rates.dirtLevel2) || 0,
+      parseFloat(rates.dirtLevel3) || 0,
+    ];
+    const accessibilityCharge = parseFloat(rates.accessibility) || 0;
+    const contractDiscount = parseFloat(rates.contractDiscount) || 0;
+    const extraCharge = parseFloat(rates.extraCharge) || 0;
+
+    // Calculate the total base price
+    const totalBasePrice = basePrices.reduce((sum, price) => sum + price, 0);
+
+    // Calculate the total price with adjustments
+    const totalWithInterior = totalBasePrice * (1 + interiorPercentage / 100);
+    const totalWithDirtLevel = totalWithInterior * (1 + dirtLevelAdjustments.reduce((sum, adjustment) => sum + adjustment, 0) / 100);
+    const totalWithAccessibility = totalWithDirtLevel * (1 + accessibilityCharge / 100);
+    const totalWithDiscount = totalWithAccessibility * (1 - contractDiscount / 100);
+    const finalTotalPrice = totalWithDiscount + extraCharge;
+
+    setTotalPrice(finalTotalPrice);
+  };
+
+  // Update the total price whenever the rates state changes
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [rates]);
 
   const resetDefaults = () => {
     setRates({
@@ -141,7 +177,6 @@ const CustomizeRatesScreen = () => {
       Alert.alert("Error", "No user is logged in", [{ text: "OK" }]);
     }
   };
-  
 
   // Use colors directly
   const backgroundColor = useThemeColor(undefined, "background");
@@ -232,8 +267,8 @@ const CustomizeRatesScreen = () => {
         />
       </View>
 
-     {/* Discount */}
-     <View style={styles.inputContainer}>
+      {/* Discount */}
+      <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Discount (%)</Text>
         <TextInput
           style={[styles.input, { backgroundColor: inputBackground, borderColor }]}
@@ -257,22 +292,28 @@ const CustomizeRatesScreen = () => {
           placeholderTextColor={placeholderColor} 
         />
       </View>
-      
-    {/* Save/Reset Button */}
-      {/* <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
-         <Text style={styles.btnText}>Save</Text>
+
+      {/* Display Total Price */}
+      <View style={styles.inputContainer}>
+        <Text style={[styles.text, { color: textColor }]}>Total Price:</Text>
+        <Text style={[styles.text, { color: textColor }]}>${totalPrice.toFixed(2)}</Text>
+      </View>
+
+      {/* Save/Reset Button */}
+      <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
+        <Text style={styles.btnText}>Save</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={resetDefaults}>
-         <Text style={styles.btnText}>Reset</Text>
-      </TouchableOpacity> */}
+        <Text style={styles.btnText}>Reset</Text>
+      </TouchableOpacity> 
 
-      {/* Buttons */}
+     {/* Buttons 
       <View style={styles.buttonContainer}>
         <Button title="Save" onPress={saveRatesData} />
         <View style={styles.spacing} />
         <Button title="Reset to Default" onPress={resetDefaults} color="red" />
-      </View>
+      </View>*/}
     </ScrollView>
   );
 };
