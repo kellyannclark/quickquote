@@ -84,7 +84,7 @@ export default function Login() {
           />
 
           {/* Forgot Password */}
-          <TouchableOpacity onPress={() => router.push({ pathname: '/' })}>
+          <TouchableOpacity onPress={() => router.push({ pathname: '../forgot-password' })}>
             <Text style={styles.subtext}>Forgot Password</Text>
           </TouchableOpacity>
         </View>
