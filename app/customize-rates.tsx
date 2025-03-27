@@ -100,22 +100,23 @@ const CustomizeRatesScreen = () => {
         try {
           const ratesData = {
             baseRates: {
-              XS: rates.baseXS,
-              SM: rates.baseSM,
-              MD: rates.baseMD,
-              LG: rates.baseLG,
-              XL: rates.baseXL,
+              XS: Number(rates.baseXS),
+              SM: Number(rates.baseSM),
+              MD: Number(rates.baseMD),
+              LG: Number(rates.baseLG),
+              XL: Number(rates.baseXL),
             },
-            interiorPercentage: rates.interiorPercentage,
+            interiorPercentage: Number(rates.interiorPercentage),
             dirtLevelAdjustments: {
-              level1: rates.dirtLevel1,
-              level2: rates.dirtLevel2,
-              level3: rates.dirtLevel3,
+              level1: Number(rates.dirtLevel1),
+              level2: Number(rates.dirtLevel2),
+              level3: Number(rates.dirtLevel3),
             },
-            accessibilityCharge: rates.accessibility,
-            contractDiscount: rates.contractDiscount,
-            extraCharge: rates.extraCharge,
+            accessibilityCharge: Number(rates.accessibility),
+            contractDiscount: Number(rates.contractDiscount),
+            extraCharge: Number(rates.extraCharge),
           };
+          
   
           console.log("Saving this data:", ratesData);
   

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Platform, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { auth, db } from '@/backend/firebaseConfig';
+import { auth, db, storage } from '@/backend/firebaseConfig';
 import { doc, getDoc, collection, addDoc, Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { calculateQuoteTotal } from '../utils/quoteCalculator';
 
 export default function MakeAQuoteScreen() {
@@ -26,6 +27,7 @@ export default function MakeAQuoteScreen() {
     address: '',
   });
 
+  const [imageUploads, setImageUploads] = useState<{ file: File; comment: string; previewUrl: string }[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
@@ -106,6 +108,7 @@ export default function MakeAQuoteScreen() {
       businessName: '',
       address: '',
     });
+    setImageUploads([]);
     setTotal(0);
   };
 
@@ -114,6 +117,18 @@ export default function MakeAQuoteScreen() {
     if (!user) return;
 
     try {
+      let uploadedImages: { imageUrl: string; comment: string }[] = [];
+
+      // Upload images to Firebase Storage
+      for (const item of imageUploads) {
+        const file = item.file;
+        const comment = item.comment;
+        const storageRef = ref(storage, `quotes/${user.uid}_${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        uploadedImages.push({ imageUrl: downloadURL, comment });
+      }
+
       const quoteData = {
         userId: user.uid,
         windows: {
@@ -133,6 +148,7 @@ export default function MakeAQuoteScreen() {
         extraCharge: parseFloat(quoteDetails.extraCharge) || 0,
         createdAt: Timestamp.now(),
         customer,
+        images: uploadedImages,
       };
 
       await addDoc(collection(db, 'Quotes'), quoteData);
@@ -142,6 +158,26 @@ export default function MakeAQuoteScreen() {
       console.error("Error saving quote:", error);
       Alert.alert("Error", "Failed to save quote.");
     }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newUploads = Array.from(files).map(file => ({
+        file,
+        comment: '',
+        previewUrl: URL.createObjectURL(file),
+      }));
+      setImageUploads(newUploads);
+    }
+  };
+
+  const handleCommentChange = (index: number, comment: string) => {
+    setImageUploads(prev => {
+      const newUploads = [...prev];
+      newUploads[index].comment = comment;
+      return newUploads;
+    });
   };
 
   if (loading) return <Text style={{ padding: 20 }}>Loading rates...</Text>;
@@ -224,6 +260,34 @@ export default function MakeAQuoteScreen() {
           placeholderTextColor="#999"
         />
       </View>
+
+      {Platform.OS === 'web' && (
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Upload Images (optional)</Text>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileInputChange}
+          />
+          {imageUploads.map((item, index) => (
+            <View key={index} style={{ marginTop: 10 }}>
+              <Image
+                source={{ uri: item.previewUrl }}
+                style={{ width: 100, height: 100, borderRadius: 8, marginBottom: 10, objectFit: 'cover' }}
+                resizeMode="cover"
+              />
+              <TextInput
+                style={[styles.input, { backgroundColor: inputBg, borderColor }]}
+                placeholder="Enter comment (optional)"
+                placeholderTextColor="#999"
+                value={item.comment}
+                onChangeText={(val) => handleCommentChange(index, val)}
+              />
+            </View>
+          ))}
+        </View>
+      )}
 
       <TouchableOpacity style={styles.btn} onPress={handleCalculate}>
         <Text style={styles.btnText}>Calculate Quote</Text>
