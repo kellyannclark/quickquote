@@ -17,6 +17,12 @@
         "backgroundColor": "#ffffff"
       }
     },
+    
+      "expo": {
+        "plugins": ["expo-camera"]
+      }
+    },
+    
     "web": {
       "bundler": "metro",
       "output": "single",
@@ -38,4 +44,5 @@
       "typedRoutes": true
     }
   }
-}
+
+
