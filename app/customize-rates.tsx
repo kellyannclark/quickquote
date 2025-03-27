@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, ScrollView, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { auth, db } from "../backend/firebaseConfig"; // Import auth and db from your firebaseConfig
-import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods
+import { auth, db } from "../backend/firebaseConfig";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { router } from "expo-router";
+import { Keyboard } from 'react-native'; // 👈 Import this at the top
+
 
 const CustomizeRatesScreen = () => {
   const [rates, setRates] = useState({
@@ -21,13 +23,11 @@ const CustomizeRatesScreen = () => {
     extraCharge: "",
   });
 
-  const [totalPrice, setTotalPrice] = useState(0); // State to store the total price
-  const [loading, setLoading] = useState(true);  // To handle loading state
+  const [loading, setLoading] = useState(true);
+  const [saved, setSaved] = useState(false);
 
-  // Fetch data from Firestore
   const fetchRatesData = async (userId: string) => {
     try {
-      // Fetch from Firestore
       const ratesDocRef = doc(db, "Rates", userId);
       const ratesDoc = await getDoc(ratesDocRef);
       if (ratesDoc.exists()) {
@@ -46,24 +46,20 @@ const CustomizeRatesScreen = () => {
           contractDiscount: data?.contractDiscount || "",
           extraCharge: data?.extraCharge || "",
         });
-      } else {
-        console.log("No data found for this user.");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setLoading(false);  // Set loading to false once the data is fetched
+      setLoading(false);
     }
   };
 
-  // Fetch the current user and their data when the component mounts
   useEffect(() => {
-    const user = auth.currentUser; // Get the current logged-in user
+    const user = auth.currentUser;
     if (user) {
-      fetchRatesData(user.uid); // Fetch data for the logged-in user
+      fetchRatesData(user.uid);
     } else {
-      console.log("No user is logged in.");
-      setLoading(false);  // Set loading to false if no user is logged in
+      setLoading(false);
     }
   }, []);
 
@@ -73,44 +69,6 @@ const CustomizeRatesScreen = () => {
       [key]: value,
     }));
   };
-
-  // Function to calculate the total price
-  const calculateTotalPrice = () => {
-    const basePrices = [
-      parseFloat(rates.baseXS) || 0,
-      parseFloat(rates.baseSM) || 0,
-      parseFloat(rates.baseMD) || 0,
-      parseFloat(rates.baseLG) || 0,
-      parseFloat(rates.baseXL) || 0,
-    ];
-
-    const interiorPercentage = parseFloat(rates.interiorPercentage) || 0;
-    const dirtLevelAdjustments = [
-      parseFloat(rates.dirtLevel1) || 0,
-      parseFloat(rates.dirtLevel2) || 0,
-      parseFloat(rates.dirtLevel3) || 0,
-    ];
-    const accessibilityCharge = parseFloat(rates.accessibility) || 0;
-    const contractDiscount = parseFloat(rates.contractDiscount) || 0;
-    const extraCharge = parseFloat(rates.extraCharge) || 0;
-
-    // Calculate the total base price
-    const totalBasePrice = basePrices.reduce((sum, price) => sum + price, 0);
-
-    // Calculate the total price with adjustments
-    const totalWithInterior = totalBasePrice * (1 + interiorPercentage / 100);
-    const totalWithDirtLevel = totalWithInterior * (1 + dirtLevelAdjustments.reduce((sum, adjustment) => sum + adjustment, 0) / 100);
-    const totalWithAccessibility = totalWithDirtLevel * (1 + accessibilityCharge / 100);
-    const totalWithDiscount = totalWithAccessibility * (1 - contractDiscount / 100);
-    const finalTotalPrice = totalWithDiscount + extraCharge;
-
-    setTotalPrice(finalTotalPrice);
-  };
-
-  // Update the total price whenever the rates state changes
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [rates]);
 
   const resetDefaults = () => {
     setRates({
@@ -129,95 +87,106 @@ const CustomizeRatesScreen = () => {
     });
   };
 
-  // Save data to Firestore 
   const saveRatesData = async () => {
+    Keyboard.dismiss(); 
     const user = auth.currentUser;
+    console.log("Save button pressed");
+  
     if (user) {
-      try {
-        const ratesData = {
-          baseRates: {
-            XS: rates.baseXS,
-            SM: rates.baseSM,
-            MD: rates.baseMD,
-            LG: rates.baseLG,
-            XL: rates.baseXL,
-          },
-          interiorPercentage: rates.interiorPercentage,
-          dirtLevelAdjustments: {
-            level1: rates.dirtLevel1,
-            level2: rates.dirtLevel2,
-            level3: rates.dirtLevel3,
-          },
-          accessibilityCharge: rates.accessibility,
-          contractDiscount: rates.contractDiscount,
-          extraCharge: rates.extraCharge,
-        };
+      console.log("User is logged in:", user.uid);
   
-        // Save ratesData to Firestore
-        const ratesDocRef = doc(db, "Rates", user.uid); // Reference to the user's document
-        await setDoc(ratesDocRef, ratesData); // Save the structured ratesData to Firestore
-        console.log("Rates saved successfully!");
+      // Delay to allow last state update to commit
+      setTimeout(async () => {
+        try {
+          const ratesData = {
+            baseRates: {
+              XS: rates.baseXS,
+              SM: rates.baseSM,
+              MD: rates.baseMD,
+              LG: rates.baseLG,
+              XL: rates.baseXL,
+            },
+            interiorPercentage: rates.interiorPercentage,
+            dirtLevelAdjustments: {
+              level1: rates.dirtLevel1,
+              level2: rates.dirtLevel2,
+              level3: rates.dirtLevel3,
+            },
+            accessibilityCharge: rates.accessibility,
+            contractDiscount: rates.contractDiscount,
+            extraCharge: rates.extraCharge,
+          };
   
-        // Show success alert after both Firestore 
-        Alert.alert("Success", "Customized Rates saved successfully", [{ text: "OK" }]);
-        router.push('/dashboard'); // Navigate to dashboard after saving
-      } catch (error: unknown) {
-        // Check if the error is an instance of Error
-        if (error instanceof Error) {
-          console.error("Error saving data:", error.message);  // Access error.message safely
-          Alert.alert("Error", `Failed to save data: ${error.message}`, [{ text: "OK" }]);
-        } else {
-          // If the error is not an instance of Error, just log it as unknown
-          console.error("Unknown error saving data:", error);
-          Alert.alert("Error", "An unknown error occurred", [{ text: "OK" }]);
+          console.log("Saving this data:", ratesData);
+  
+          const ratesDocRef = doc(db, "Rates", user.uid);
+          await setDoc(ratesDocRef, ratesData);
+  
+          console.log("Rates saved successfully to Firestore.");
+  
+          Alert.alert("Success", "Customized Rates saved successfully", [
+            {
+              text: "OK",
+              onPress: () => {
+                console.log("Redirecting to dashboard...");
+                router.push("/dashboard");
+              },
+            },
+          ]);
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Error saving data:", error.message);
+            Alert.alert("Error", `Failed to save data: ${error.message}`, [{ text: "OK" }]);
+          } else {
+            console.error("Unknown error saving data:", error);
+            Alert.alert("Error", "An unknown error occurred", [{ text: "OK" }]);
+          }
         }
-      }
+      }, 100); // <- small delay
     } else {
-      console.log("No user is logged in, unable to save data.");
+      console.warn("No user logged in, cannot save.");
       Alert.alert("Error", "No user is logged in", [{ text: "OK" }]);
     }
   };
+  
+  
 
+  
   // Use colors directly
   const backgroundColor = useThemeColor(undefined, "background");
   const textColor = useThemeColor(undefined, "text");
   const inputBackground = useThemeColor(undefined, "background");
   const borderColor = useThemeColor(undefined, "secondary");
-  const buttonColor = useThemeColor(undefined, "primary");
-  const placeholderColor = "#A0A0A0"; // Light gray for placeholders
+  const placeholderColor = "#A0A0A0";
 
-  if (loading) {
-    return <Text>Loading...</Text>;  // Show loading indicator while fetching data
-  }
+  if (loading) return <Text>Loading...</Text>;
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Customize Rates</Text>
 
-      {/* Base Prices for Each Window Size */}
+      {saved && (
+        <View style={styles.savedBanner}>
+          <Text style={styles.savedText}>✅ Rates saved successfully!</Text>
+        </View>
+      )}
+
       <View style={styles.rowContainer}>
-        {[
-          { key: "baseXS", label: "XS Window" },
-          { key: "baseSM", label: "SM Window" },
-          { key: "baseMD", label: "MD Window" },
-          { key: "baseLG", label: "LG Window" },
-          { key: "baseXL", label: "XL Window" },
-        ].map(({ key, label }) => (
-          <View key={key} style={styles.halfWidthInputContainer}>
-            <Text style={[styles.text, { color: textColor }]}>{label}</Text>
+        {["XS", "SM", "MD", "LG", "XL"].map(size => (
+          <View key={size} style={styles.halfWidthInputContainer}>
+            <Text style={[styles.text, { color: textColor }]}>{size} Window</Text>
             <TextInput
               style={[styles.smallInput, { backgroundColor: inputBackground, borderColor }]}
               keyboardType="numeric"
-              value={rates[key as keyof typeof rates]}
-              onChangeText={(value) => handleInputChange(key, value)}
+              value={rates[`base${size}` as keyof typeof rates]}
+              onChangeText={(value) => handleInputChange(`base${size}`, value)}
               placeholder="Base Price Per Window"
-              placeholderTextColor={placeholderColor} 
+              placeholderTextColor={placeholderColor}
             />
           </View>
         ))}
       </View>
 
-      {/* Interior Window Percentage */}
       <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Add Interior Window Cleaning (%)</Text>
         <TextInput
@@ -226,35 +195,29 @@ const CustomizeRatesScreen = () => {
           value={rates.interiorPercentage}
           onChangeText={(value) => handleInputChange("interiorPercentage", value)}
           placeholder="ex: 75%"
-          placeholderTextColor={placeholderColor} 
+          placeholderTextColor={placeholderColor}
         />
       </View>
 
-      {/* Dirt Level Adjustments */}
       <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Add Dirt Level Adjustment (%)</Text>
         <View style={styles.rowContainer}>
-          {[
-            { key: "dirtLevel1", label: "Level 1", placeholder: "ex: 3%" },
-            { key: "dirtLevel2", label: "Level 2", placeholder: "ex: 5%" },
-            { key: "dirtLevel3", label: "Level 3", placeholder: "ex: 7%" },
-          ].map(({ key, label, placeholder }) => (
-            <View key={key} style={styles.thirdWidthInputContainer}>
-              <Text style={[styles.text, { color: textColor }]}>{label}</Text>
+          {[1, 2, 3].map(level => (
+            <View key={level} style={styles.thirdWidthInputContainer}>
+              <Text style={[styles.text, { color: textColor }]}>Level {level}</Text>
               <TextInput
                 style={[styles.smallInput, { backgroundColor: inputBackground, borderColor }]}
                 keyboardType="numeric"
-                value={rates[key as keyof typeof rates]}
-                onChangeText={(value) => handleInputChange(key, value)}
-                placeholder={placeholder}
-                placeholderTextColor={placeholderColor} 
+                value={rates[`dirtLevel${level}` as keyof typeof rates]}
+                onChangeText={(value) => handleInputChange(`dirtLevel${level}`, value)}
+                placeholder={`ex: ${level * 2 + 1}%`}
+                placeholderTextColor={placeholderColor}
               />
             </View>
           ))}
         </View>
       </View>
 
-      {/* Accessibility Charge */}
       <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Add Accessibility Charge (%)</Text>
         <TextInput
@@ -263,11 +226,10 @@ const CustomizeRatesScreen = () => {
           value={rates.accessibility}
           onChangeText={(value) => handleInputChange("accessibility", value)}
           placeholder="ex: 10%"
-          placeholderTextColor={placeholderColor} 
+          placeholderTextColor={placeholderColor}
         />
       </View>
 
-      {/* Discount */}
       <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Discount (%)</Text>
         <TextInput
@@ -276,11 +238,10 @@ const CustomizeRatesScreen = () => {
           value={rates.contractDiscount}
           onChangeText={(value) => handleInputChange("contractDiscount", value)}
           placeholder="ex: 10%"
-          placeholderTextColor={placeholderColor} 
+          placeholderTextColor={placeholderColor}
         />
       </View>
 
-      {/* Other Charges */}
       <View style={styles.inputContainer}>
         <Text style={[styles.text, { color: textColor }]}>Other Charges ($)</Text>
         <TextInput
@@ -289,40 +250,26 @@ const CustomizeRatesScreen = () => {
           value={rates.extraCharge}
           onChangeText={(value) => handleInputChange("extraCharge", value)}
           placeholder="ex: $25.00"
-          placeholderTextColor={placeholderColor} 
+          placeholderTextColor={placeholderColor}
         />
       </View>
 
-      {/* Display Total Price */}
-      <View style={styles.inputContainer}>
-        <Text style={[styles.text, { color: textColor }]}>Total Price:</Text>
-        <Text style={[styles.text, { color: textColor }]}>${totalPrice.toFixed(2)}</Text>
-      </View>
-
-      {/* Save/Reset Button */}
       <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
         <Text style={styles.btnText}>Save</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={resetDefaults}>
         <Text style={styles.btnText}>Reset</Text>
-      </TouchableOpacity> 
-
-     {/* Buttons 
-      <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={saveRatesData} />
-        <View style={styles.spacing} />
-        <Button title="Reset to Default" onPress={resetDefaults} color="red" />
-      </View>*/}
+      </TouchableOpacity>
     </ScrollView>
   );
 };
 
-// Styles (No Theme-Related Changes Here)
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   title: {
     fontSize: 22,
@@ -364,14 +311,6 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 3
-  },
-  spacing: {
-    height: 10,
-  },
   btn: {
     borderRadius: 20,
     padding: 10,
@@ -390,7 +329,21 @@ const styles = StyleSheet.create({
   },
   resetBtn: {
     backgroundColor: "red"
-  }
+  },
+  savedBanner: {
+    backgroundColor: '#d4edda',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderColor: '#c3e6cb',
+    borderWidth: 1,
+  },
+  savedText: {
+    color: '#155724',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
 });
 
 export default CustomizeRatesScreen;

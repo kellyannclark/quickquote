@@ -43,6 +43,7 @@ export default function RootLayout() {
          <Stack.Screen name="my-quotes" options={{ title: "My Quotes"}} />
          <Stack.Screen name="edit-quote" options={{ title: "Edit Quote"}} />
          <Stack.Screen name="quote-detail" options={{ title: "Quote Detail"}} />
+         <Stack.Screen name="make-a-quote" options={{ title: "Make a Quote"}} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
