@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Platform, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { auth, db, storage } from '@/backend/firebaseConfig';
@@ -6,13 +6,43 @@ import { doc, getDoc, collection, addDoc, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { calculateQuoteTotal } from '../utils/quoteCalculator';
 
+// Type definitions
+interface WindowCounts {
+  XS: string;
+  SM: string;
+  MD: string;
+  LG: string;
+  XL: string;
+}
+
+interface QuoteDetails {
+  interior: boolean;
+  dirtLevel: 1 | 2 | 3;
+  isAccessible: boolean;
+  hasContract: boolean;
+  extraCharge: string;
+}
+
+interface Customer {
+  name: string;
+  email: string;
+  businessName: string;
+  address: string;
+}
+
+interface ImageUpload {
+  file: File;
+  comment: string;
+  previewUrl: string;
+}
+
 export default function MakeAQuoteScreen() {
   const [rates, setRates] = useState<any>(null);
-  const [windowCounts, setWindowCounts] = useState({
+  const [windowCounts, setWindowCounts] = useState<WindowCounts>({
     XS: '0', SM: '0', MD: '0', LG: '0', XL: '0'
   });
 
-  const [quoteDetails, setQuoteDetails] = useState({
+  const [quoteDetails, setQuoteDetails] = useState<QuoteDetails>({
     interior: false,
     dirtLevel: 1,
     isAccessible: false,
@@ -20,52 +50,25 @@ export default function MakeAQuoteScreen() {
     extraCharge: '',
   });
 
-  const [customer, setCustomer] = useState({
+  const [customer, setCustomer] = useState<Customer>({
     name: '',
     email: '',
     businessName: '',
     address: '',
   });
 
-  const [imageUploads, setImageUploads] = useState<{ file: File; comment: string; previewUrl: string }[]>([]);
+  const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const textColor = useThemeColor(undefined, 'text');
   const backgroundColor = useThemeColor(undefined, 'background');
   const inputBg = useThemeColor(undefined, 'background');
   const borderColor = useThemeColor(undefined, 'secondary');
 
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      const fetchRates = async () => {
-        const docRef = doc(db, 'Rates', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setRates(docSnap.data());
-        } else {
-          Alert.alert('Error', 'No rate data found. Please customize your rates first.');
-        }
-        setLoading(false);
-      };
-      fetchRates();
-    }
-  }, []);
-
-  const handleWindowCountChange = (key: string, value: string) => {
-    setWindowCounts(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleQuoteDetailChange = (key: string, value: any) => {
-    setQuoteDetails(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleCustomerDetailChange = (key: string, value: string) => {
-    setCustomer(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleCalculate = () => {
+  // Calculate total whenever relevant inputs change
+  const calculateTotal = useCallback(() => {
     if (!rates) return;
 
     const parsedCounts = {
@@ -83,7 +86,7 @@ export default function MakeAQuoteScreen() {
       parsedCounts,
       {
         interior: quoteDetails.interior,
-        dirtLevel: quoteDetails.dirtLevel as 1 | 2 | 3,
+        dirtLevel: quoteDetails.dirtLevel,
         isAccessible: quoteDetails.isAccessible,
         hasContract: quoteDetails.hasContract,
         extraCharge: parsedExtraCharge,
@@ -91,6 +94,51 @@ export default function MakeAQuoteScreen() {
     );
 
     setTotal(totalPrice);
+  }, [rates, windowCounts, quoteDetails]);
+
+  useEffect(() => {
+    calculateTotal();
+  }, [calculateTotal]);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      const fetchRates = async () => {
+        try {
+          const docRef = doc(db, 'Rates', user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setRates(docSnap.data());
+          } else {
+            Alert.alert('Error', 'No rate data found. Please customize your rates first.');
+          }
+        } catch (error) {
+          console.error('Error fetching rates:', error);
+          Alert.alert('Error', 'Failed to load rate data.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchRates();
+    } else {
+      setLoading(false);
+      Alert.alert('Error', 'You must be logged in to create quotes.');
+    }
+  }, []);
+
+  const handleWindowCountChange = (key: keyof WindowCounts, value: string) => {
+    // Only allow numbers
+    if (/^\d*$/.test(value)) {
+      setWindowCounts(prev => ({ ...prev, [key]: value }));
+    }
+  };
+
+  const handleQuoteDetailChange = <K extends keyof QuoteDetails>(key: K, value: QuoteDetails[K]) => {
+    setQuoteDetails(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleCustomerDetailChange = <K extends keyof Customer>(key: K, value: Customer[K]) => {
+    setCustomer(prev => ({ ...prev, [key]: value }));
   };
 
   const handleReset = () => {
@@ -114,19 +162,31 @@ export default function MakeAQuoteScreen() {
 
   const handleSave = async () => {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to save quotes.');
+      return;
+    }
+
+    if (total <= 0) {
+      Alert.alert('Error', 'Please calculate a valid total before saving.');
+      return;
+    }
+
+    setIsSaving(true);
 
     try {
       let uploadedImages: { imageUrl: string; comment: string }[] = [];
 
-      // Upload images to Firebase Storage
-      for (const item of imageUploads) {
-        const file = item.file;
-        const comment = item.comment;
-        const storageRef = ref(storage, `quotes/${user.uid}_${Date.now()}_${file.name}`);
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-        uploadedImages.push({ imageUrl: downloadURL, comment });
+      // Upload images to Firebase Storage if there are any
+      if (imageUploads.length > 0) {
+        await Promise.all(
+          imageUploads.map(async (item) => {
+            const storageRef = ref(storage, `quotes/${user.uid}/${Date.now()}_${item.file.name}`);
+            await uploadBytes(storageRef, item.file);
+            const downloadURL = await getDownloadURL(storageRef);
+            uploadedImages.push({ imageUrl: downloadURL, comment: item.comment });
+          })
+        );
       }
 
       const quoteData = {
@@ -143,33 +203,43 @@ export default function MakeAQuoteScreen() {
           dirtLevel: quoteDetails.dirtLevel,
           isAccessible: quoteDetails.isAccessible,
           hasContract: quoteDetails.hasContract,
+          extraCharge: parseFloat(quoteDetails.extraCharge) || 0,
         },
         finalPrice: total,
-        extraCharge: parseFloat(quoteDetails.extraCharge) || 0,
-        createdAt: Timestamp.now(),
-        customer,
+        customer: {
+          ...customer,
+          email: customer.email.toLowerCase().trim(),
+        },
         images: uploadedImages,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       };
 
       await addDoc(collection(db, 'Quotes'), quoteData);
-      Alert.alert("Success", "Quote saved to Firestore.");
+      Alert.alert("Success", "Quote has been saved successfully.");
       handleReset();
     } catch (error) {
       console.error("Error saving quote:", error);
-      Alert.alert("Error", "Failed to save quote.");
+      Alert.alert("Error", "Failed to save quote. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
+    if (files && files.length > 0) {
       const newUploads = Array.from(files).map(file => ({
         file,
         comment: '',
         previewUrl: URL.createObjectURL(file),
       }));
-      setImageUploads(newUploads);
+      setImageUploads(prev => [...prev, ...newUploads]);
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImageUploads(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleCommentChange = (index: number, comment: string) => {
@@ -180,19 +250,38 @@ export default function MakeAQuoteScreen() {
     });
   };
 
-  if (loading) return <Text style={{ padding: 20 }}>Loading rates...</Text>;
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: textColor }}>Loading rates...</Text>
+      </View>
+    );
+  }
+
+  if (!rates) {
+    return (
+      <View style={[styles.container, { backgroundColor, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: textColor, textAlign: 'center', padding: 20 }}>
+          No rate data found. Please customize your rates first.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Make a Quote</Text>
 
-      {['XS', 'SM', 'MD', 'LG', 'XL'].map(size => (
+      <Text style={[styles.totalText, { color: textColor }]}>Total: ${total.toFixed(2)}</Text>
+
+      <Text style={[styles.sectionHeader, { color: textColor }]}>Window Counts</Text>
+      {(['XS', 'SM', 'MD', 'LG', 'XL'] as const).map(size => (
         <View key={size} style={styles.inputContainer}>
           <Text style={[styles.label, { color: textColor }]}>{size} Windows</Text>
           <TextInput
             style={[styles.input, { backgroundColor: inputBg, borderColor }]}
             keyboardType="numeric"
-            value={windowCounts[size as keyof typeof windowCounts]}
+            value={windowCounts[size]}
             onChangeText={value => handleWindowCountChange(size, value)}
             placeholder="0"
             placeholderTextColor="#999"
@@ -200,19 +289,24 @@ export default function MakeAQuoteScreen() {
         </View>
       ))}
 
-      {['name', 'email', 'businessName', 'address'].map(field => (
+      <Text style={[styles.sectionHeader, { color: textColor }]}>Customer Information</Text>
+      {(['name', 'email', 'businessName', 'address'] as const).map(field => (
         <View key={field} style={styles.inputContainer}>
-          <Text style={[styles.label, { color: textColor }]}>{field.charAt(0).toUpperCase() + field.slice(1)}</Text>
+          <Text style={[styles.label, { color: textColor }]}>
+            {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+          </Text>
           <TextInput
             style={[styles.input, { backgroundColor: inputBg, borderColor }]}
-            value={customer[field as keyof typeof customer]}
+            value={customer[field]}
             onChangeText={value => handleCustomerDetailChange(field, value)}
             placeholder={field === 'email' ? 'example@email.com' : ''}
             placeholderTextColor="#999"
+            keyboardType={field === 'email' ? 'email-address' : 'default'}
           />
         </View>
       ))}
 
+      <Text style={[styles.sectionHeader, { color: textColor }]}>Quote Details</Text>
       <View style={styles.switchRow}>
         <Text style={[styles.label, { color: textColor }]}>Include Interior Windows?</Text>
         <Switch
@@ -227,9 +321,12 @@ export default function MakeAQuoteScreen() {
           style={[styles.input, { backgroundColor: inputBg, borderColor }]}
           keyboardType="numeric"
           value={quoteDetails.dirtLevel.toString()}
-          onChangeText={(val) =>
-            handleQuoteDetailChange('dirtLevel', Math.max(1, Math.min(3, parseInt(val) || 1)))
-          }
+          onChangeText={(val) => {
+            const num = parseInt(val);
+            if (num >= 1 && num <= 3) {
+              handleQuoteDetailChange('dirtLevel', num as 1 | 2 | 3);
+            }
+          }}
         />
       </View>
 
@@ -253,9 +350,9 @@ export default function MakeAQuoteScreen() {
         <Text style={[styles.label, { color: textColor }]}>Extra Charge ($)</Text>
         <TextInput
           style={[styles.input, { backgroundColor: inputBg, borderColor }]}
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           value={quoteDetails.extraCharge}
-          onChangeText={(val) => handleQuoteDetailChange('extraCharge', val)}
+          onChangeText={(val) => handleQuoteDetailChange('extraCharge', val.replace(/[^0-9.]/g, ''))}
           placeholder="0"
           placeholderTextColor="#999"
         />
@@ -269,39 +366,58 @@ export default function MakeAQuoteScreen() {
             multiple
             accept="image/*"
             onChange={handleFileInputChange}
+            style={{ marginBottom: 10 }}
           />
           {imageUploads.map((item, index) => (
-            <View key={index} style={{ marginTop: 10 }}>
+            <View key={index} style={styles.imageContainer}>
               <Image
                 source={{ uri: item.previewUrl }}
-                style={{ width: 100, height: 100, borderRadius: 8, marginBottom: 10, objectFit: 'cover' }}
+                style={styles.imagePreview}
                 resizeMode="cover"
               />
               <TextInput
-                style={[styles.input, { backgroundColor: inputBg, borderColor }]}
+                style={[styles.input, { backgroundColor: inputBg, borderColor, flex: 1 }]}
                 placeholder="Enter comment (optional)"
                 placeholderTextColor="#999"
                 value={item.comment}
                 onChangeText={(val) => handleCommentChange(index, val)}
               />
+              <TouchableOpacity 
+                style={styles.removeImageButton}
+                onPress={() => handleRemoveImage(index)}
+              >
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
             </View>
           ))}
         </View>
       )}
 
-      <TouchableOpacity style={styles.btn} onPress={handleCalculate}>
-        <Text style={styles.btnText}>Calculate Quote</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity 
+          style={[styles.btn, { backgroundColor: '#38b6ff' }]} 
+          onPress={calculateTotal}
+        >
+          <Text style={styles.btnText}>Recalculate</Text>
+        </TouchableOpacity>
 
-      <Text style={[styles.totalText, { color: textColor }]}>Total: ${total.toFixed(2)}</Text>
+        <TouchableOpacity 
+          style={[styles.btn, { backgroundColor: '#2ecc71' }]} 
+          onPress={handleSave}
+          disabled={isSaving}
+        >
+          <Text style={styles.btnText}>
+            {isSaving ? 'Saving...' : 'Save Quote'}
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.btn, { backgroundColor: '#2ecc71' }]} onPress={handleSave}>
-        <Text style={styles.btnText}>Save Quote</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.btn, { backgroundColor: 'red' }]} onPress={handleReset}>
-        <Text style={styles.btnText}>Reset</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.btn, { backgroundColor: '#e74c3c' }]} 
+          onPress={handleReset}
+        >
+          <Text style={styles.btnText}>Reset</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -311,13 +427,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingBottom: 40,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 20,
+    marginBottom: 10,
   },
   inputContainer: {
     marginBottom: 15,
@@ -338,12 +460,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginTop: 20,
+  },
   btn: {
-    backgroundColor: '#38b6ff',
+    flex: 1,
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
-    marginTop: 15,
+    justifyContent: 'center',
   },
   btnText: {
     color: '#fff',
@@ -354,6 +482,31 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 20,
+    marginVertical: 15,
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  imagePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    objectFit: 'cover',
+  },
+  removeImageButton: {
+    backgroundColor: '#e74c3c',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: 'white',
+    fontSize: 20,
+    lineHeight: 20,
   },
 });
