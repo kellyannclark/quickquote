@@ -13,10 +13,18 @@ import { useRouter } from 'expo-router';
 import { auth, db } from "../../backend/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { useGoogleAuth } from "../../backend/GoogleAuth";
+
+
 
 export default function Login() {
+  console.log("🚀 Login.tsx mounted");
   const router = useRouter();
   const quickQuoteLogo = require('../../assets/images/logo.png');
+  const { promptAsync, request } = useGoogleAuth();
+  const [authInProgress, setAuthInProgress] = useState(false);
+
+
 
   const [form, setForm] = useState({
     email: "",
@@ -34,6 +42,7 @@ export default function Login() {
     setLoading(true);
 
     try {
+      console.log("📨 Email login attempt:", form.email, form.password);
       const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
       const user = userCredential.user;
 
@@ -54,6 +63,36 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const handleGoogleLogin = async () => {
+    if (authInProgress || !request) return;
+  
+    console.log("🟢 Google Sign-In button clicked (redirect)");
+    setAuthInProgress(true);
+  
+    try {
+      const result = await promptAsync({
+        useProxy: false,
+        redirectUri: "http://localhost:8081",
+        prompt: "select_account",
+      } as any);
+  
+      console.log("🔁 Google redirect login result:", result);
+  
+      if (result.type === "success") {
+        console.log("✅ Google Sign-In via redirect successful");
+        // useGoogleAuth will handle Firebase
+      } else {
+        console.warn("❌ Google Sign-In was dismissed or canceled");
+      }
+    } catch (error) {
+      console.error("❌ Google Sign-In error:", error);
+    } finally {
+      setAuthInProgress(false);
+    }
+  };
+  
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,6 +136,16 @@ export default function Login() {
             </Text>
           </TouchableOpacity>
         </View>
+       {/* Google Sign In Button*/}
+        <TouchableOpacity
+          style={[styles.logBtn, styles.googleBtn]}
+          onPress={handleGoogleLogin}
+          disabled={!request || authInProgress}
+        >
+          <Text style={styles.logBtnText}>
+            {authInProgress ? "Please wait..." : "Sign in with Google"}
+          </Text>
+        </TouchableOpacity>
 
         {/* Navigate to Sign Up */}
         <TouchableOpacity onPress={() => router.push({ pathname: '../signup' })}>
@@ -162,7 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "10%",
+    marginTop: "5%",
     width: "60%",
     marginHorizontal: "20%",
   },
@@ -196,4 +245,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 15,
   },
+  googleBtn: {
+    backgroundColor: "#db4437", // Google red
+    marginTop: 3,              // Space below login
+    marginBottom: 20,           // ✅ Space above "Sign Up Now"
+    width: "80%",
+    marginHorizontal: "10%",
+  },
+  
+  
 });

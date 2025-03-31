@@ -88,62 +88,58 @@ const CustomizeRatesScreen = () => {
   };
 
   const saveRatesData = async () => {
-    Keyboard.dismiss(); 
+    Keyboard.dismiss();
     const user = auth.currentUser;
     console.log("Save button pressed");
   
     if (user) {
       console.log("User is logged in:", user.uid);
   
-      // Delay to allow last state update to commit
-      setTimeout(async () => {
-        try {
-          const ratesData = {
-            baseRates: {
-              XS: Number(rates.baseXS),
-              SM: Number(rates.baseSM),
-              MD: Number(rates.baseMD),
-              LG: Number(rates.baseLG),
-              XL: Number(rates.baseXL),
-            },
-            interiorPercentage: Number(rates.interiorPercentage),
-            dirtLevelAdjustments: {
-              level1: Number(rates.dirtLevel1),
-              level2: Number(rates.dirtLevel2),
-              level3: Number(rates.dirtLevel3),
-            },
-            accessibilityCharge: Number(rates.accessibility),
-            contractDiscount: Number(rates.contractDiscount),
-            extraCharge: Number(rates.extraCharge),
-          };
-          
+      try {
+        const ratesData = {
+          baseRates: {
+            XS: Number(rates.baseXS),
+            SM: Number(rates.baseSM),
+            MD: Number(rates.baseMD),
+            LG: Number(rates.baseLG),
+            XL: Number(rates.baseXL),
+          },
+          interiorPercentage: Number(rates.interiorPercentage),
+          dirtLevelAdjustments: {
+            level1: Number(rates.dirtLevel1),
+            level2: Number(rates.dirtLevel2),
+            level3: Number(rates.dirtLevel3),
+          },
+          accessibilityCharge: Number(rates.accessibility),
+          contractDiscount: Number(rates.contractDiscount),
+          extraCharge: Number(rates.extraCharge),
+        };
   
-          console.log("Saving this data:", ratesData);
+        console.log("Saving this data:", ratesData);
   
-          const ratesDocRef = doc(db, "Rates", user.uid);
-          await setDoc(ratesDocRef, ratesData);
+        const ratesDocRef = doc(db, "Rates", user.uid);
+        await setDoc(ratesDocRef, ratesData);
   
-          console.log("Rates saved successfully to Firestore.");
+        console.log("Rates saved successfully to Firestore.");
   
-          Alert.alert("Success", "Customized Rates saved successfully", [
-            {
-              text: "OK",
-              onPress: () => {
-                console.log("Redirecting to dashboard...");
-                router.push("/dashboard");
-              },
-            },
-          ]);
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            console.error("Error saving data:", error.message);
-            Alert.alert("Error", `Failed to save data: ${error.message}`, [{ text: "OK" }]);
-          } else {
-            console.error("Unknown error saving data:", error);
-            Alert.alert("Error", "An unknown error occurred", [{ text: "OK" }]);
-          }
+        // ✅ Show success message
+        Alert.alert("Success", "Your Rates Were Successfully Saved!");
+
+        resetDefaults(); // Clear the inputs
+        setSaved(true);  // Show success banner
+        
+        // Hide the banner after 3 seconds
+        setTimeout(() => setSaved(false), 3000);
+        
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error saving data:", error.message);
+          Alert.alert("Error", `Failed to save data: ${error.message}`, [{ text: "OK" }]);
+        } else {
+          console.error("Unknown error saving data:", error);
+          Alert.alert("Error", "An unknown error occurred", [{ text: "OK" }]);
         }
-      }, 100); // <- small delay
+      }
     } else {
       console.warn("No user logged in, cannot save.");
       Alert.alert("Error", "No user is logged in", [{ text: "OK" }]);

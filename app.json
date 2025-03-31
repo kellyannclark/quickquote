@@ -1,34 +1,33 @@
 {
   "expo": {
-    "name": "frontend-mobile",
+    "name": "QuickQuote",
     "slug": "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "owner": "kellyclark",   
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "light", 
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kelly.quickquote"
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    
-      "expo": {
-        "plugins": ["expo-camera"]
-      }
-    },
-    
+"android": {
+  "package": "com.kelly.quickquote", 
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/images/adaptive-icon.png",
+    "backgroundColor": "#ffffff"
+  }
+},
+
     "web": {
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-camera",
       "expo-router",
       [
         "expo-splash-screen",
@@ -44,5 +43,4 @@
       "typedRoutes": true
     }
   }
-
-
+}

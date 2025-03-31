@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { auth, db } from "../backend/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 export default function Dashboard() {
   const router = useRouter();
