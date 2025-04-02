@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { auth, db } from "../backend/firebaseConfig";
 import { collection, query, where, onSnapshot, DocumentData } from "firebase/firestore";
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface Quote {
   id: string;
@@ -12,8 +13,8 @@ interface Quote {
   };
   finalPrice: number;
   createdAt: any;
+  images?: { imageUrl: string; comment: string }[];
 }
-
 
 export default function MyQuotesScreen() {
   const router = useRouter();
@@ -21,6 +22,11 @@ export default function MyQuotesScreen() {
   const [sortType, setSortType] = useState<'date' | 'price'>('date');
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const backgroundColor = useThemeColor(undefined, 'background');
+  const textColor = useThemeColor(undefined, 'text');
+  const borderColor = useThemeColor(undefined, 'secondary');
+  const accentColor = useThemeColor(undefined, 'secondary');
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -39,7 +45,8 @@ export default function MyQuotesScreen() {
           quoteId: data.quoteId || doc.id,
           customer: data.customer || { name: "Unknown" },
           finalPrice: data.finalPrice || 0,
-          createdAt: data.createdAt ? data.createdAt.toDate() : new Date()
+          createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+          images: data.images || []
         };
       });
 
@@ -64,21 +71,22 @@ export default function MyQuotesScreen() {
   }, [search, sortType]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>My Quotes</Text>
+    <View style={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>My Quotes</Text>
 
       <TextInput
-        style={styles.search}
+        style={[styles.search, { borderColor, backgroundColor: '#1e1e1e', color: textColor }]}
         placeholder="Search by Client Name or Quote ID"
+        placeholderTextColor="#aaa"
         onChangeText={setSearch}
         value={search}
       />
 
       <View style={styles.sortButtons}>
-        <TouchableOpacity style={styles.sortButton} onPress={() => setSortType('date')}>
+        <TouchableOpacity style={[styles.sortButton, { backgroundColor: accentColor }]} onPress={() => setSortType('date')}>
           <Text style={styles.sortText}>Sort by Date</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.sortButton} onPress={() => setSortType('price')}>
+        <TouchableOpacity style={[styles.sortButton, { backgroundColor: accentColor }]} onPress={() => setSortType('price')}>
           <Text style={styles.sortText}>Sort by Price</Text>
         </TouchableOpacity>
       </View>
@@ -91,13 +99,23 @@ export default function MyQuotesScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.quoteItem}
+              style={[styles.quoteItem, { backgroundColor: '#1e1e1e', borderColor }]}
               onPress={() => router.push({ pathname: '/quote-detail', params: { quoteId: item.id } })}
             >
-              <Text style={styles.quoteId}>{item.quoteId}</Text>
-              <Text>{item.customer.name}</Text>
-              <Text>{item.createdAt.toLocaleDateString()}</Text>
-              <Text>${item.finalPrice.toFixed(2)}</Text>
+              <Text style={[styles.quoteId, { color: textColor }]}>{item.quoteId}</Text>
+              <Text style={{ color: textColor }}>{item.customer.name}</Text>
+              <Text style={{ color: textColor }}>{item.createdAt.toLocaleDateString()}</Text>
+              <Text style={{ color: textColor }}>${item.finalPrice.toFixed(2)}</Text>
+
+              {!!item.images && item.images.length > 0 && (
+                <View style={styles.imageRow}>
+                  {item.images.map((img, index) => (
+                    <View key={index} style={styles.imageContainer}>
+                      <Image source={{ uri: img.imageUrl }} style={styles.imagePreview} resizeMode="cover" />
+                    </View>
+                  ))}
+                </View>
+              )}
             </TouchableOpacity>
           )}
         />
@@ -110,33 +128,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f8f8f8',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
     textAlign: 'center',
-    marginBottom: 15,
   },
   search: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
+    fontSize: 16,
     marginBottom: 15,
-    backgroundColor: '#fff',
   },
   sortButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15,
+    gap: 10,
   },
   sortButton: {
     flex: 1,
-    backgroundColor: '#007AFF',
     padding: 10,
     borderRadius: 8,
-    marginHorizontal: 5,
   },
   sortText: {
     color: '#fff',
@@ -145,12 +160,28 @@ const styles = StyleSheet.create({
   },
   quoteItem: {
     padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 8,
     marginBottom: 10,
   },
   quoteId: {
     fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  imageRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 10,
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+  imagePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    objectFit: 'cover',
   },
 });

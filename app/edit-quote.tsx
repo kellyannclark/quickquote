@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView } from "react-native";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  Alert, ActivityIndicator, ScrollView, Platform, Image
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../backend/firebaseConfig";
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface Quote {
   quoteId: string;
@@ -15,6 +20,13 @@ interface Quote {
   createdAt: { seconds: number };
   finalPrice: number;
   windows: Record<string, number>;
+  images?: { imageUrl: string; comment: string }[];
+}
+
+interface ImageUpload {
+  file: File;
+  previewUrl: string;
+  comment: string;
 }
 
 export default function EditQuoteScreen() {
@@ -22,9 +34,15 @@ export default function EditQuoteScreen() {
   const normalizedQuoteId = Array.isArray(quoteId) ? quoteId[0] : quoteId;
   const router = useRouter();
 
+  const textColor = useThemeColor(undefined, 'text');
+  const backgroundColor = useThemeColor(undefined, 'background');
+  const inputBg = useThemeColor(undefined, 'background');
+  const borderColor = useThemeColor(undefined, 'secondary');
+
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<Partial<Quote>>({});
+  const [newImages, setNewImages] = useState<ImageUpload[]>([]);
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -37,7 +55,7 @@ export default function EditQuoteScreen() {
         if (quoteSnap.exists()) {
           const data = quoteSnap.data() as Quote;
           setQuote(data);
-          setForm({ ...data }); 
+          setForm({ ...data });
         } else {
           setQuote(null);
         }
@@ -55,8 +73,22 @@ export default function EditQuoteScreen() {
     if (!normalizedQuoteId || !form) return;
 
     try {
+      let updatedImages = form.images || [];
+
+      if (newImages.length > 0) {
+        const uploaded = await Promise.all(
+          newImages.map(async (img) => {
+            const storageRef = ref(storage, `quotes/${normalizedQuoteId}/${Date.now()}_${img.file.name}`);
+            await uploadBytes(storageRef, img.file);
+            const downloadURL = await getDownloadURL(storageRef);
+            return { imageUrl: downloadURL, comment: img.comment };
+          })
+        );
+        updatedImages = [...updatedImages, ...uploaded];
+      }
+
       const quoteRef = doc(db, "Quotes", normalizedQuoteId);
-      await updateDoc(quoteRef, form);
+      await updateDoc(quoteRef, { ...form, images: updatedImages });
       Alert.alert("Success", "Quote updated successfully.");
       router.push(`/quote-detail?quoteId=${normalizedQuoteId}`);
     } catch (error) {
@@ -65,9 +97,65 @@ export default function EditQuoteScreen() {
     }
   };
 
+  const handleImageCommentChange = (index: number, text: string) => {
+    if (!form.images) return;
+    const updated = [...form.images];
+    updated[index].comment = text;
+    setForm((prev) => ({ ...prev, images: updated }));
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setForm((prev) => {
+      const currentImages = prev.images ?? [];
+      const updatedImages = currentImages.filter((_, i) => i !== index);
+      return { ...prev, images: updatedImages };
+    });
+  };
+
+  const handleDeleteQuote = () => {
+    Alert.alert("Delete Quote", "Are you sure you want to delete this entire quote?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteDoc(doc(db, "Quotes", normalizedQuoteId));
+            Alert.alert("Deleted", "Quote deleted successfully.");
+            router.push("/my-quotes");
+          } catch (error) {
+            console.error("Error deleting quote:", error);
+            Alert.alert("Error", "Failed to delete quote.");
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const uploads: ImageUpload[] = Array.from(files).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+      comment: "",
+    }));
+    setNewImages((prev) => [...prev, ...uploads]);
+  };
+
+  const handleNewImageCommentChange = (index: number, text: string) => {
+    const updated = [...newImages];
+    updated[index].comment = text;
+    setNewImages(updated);
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor, justifyContent: "center", alignItems: "center" }]}>
         <ActivityIndicator size="large" color="#007AFF" />
       </View>
     );
@@ -75,94 +163,56 @@ export default function EditQuoteScreen() {
 
   if (!quote) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Quote not found.</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.push('/my-quotes')}>
-          <Text style={styles.backButtonText}>Go Back</Text>
+      <View style={[styles.container, { backgroundColor }]}>
+        <Text style={[styles.errorText, { color: 'red' }]}>Quote not found.</Text>
+        <TouchableOpacity style={[styles.backButton, { backgroundColor: '#333' }]} onPress={() => router.push('/my-quotes')}>
+          <Text style={[styles.backButtonText, { color: textColor }]}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Edit Quote</Text>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>Edit Quote</Text>
 
-      {/* Client Name */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Client Name:</Text>
-        <TextInput
-          style={styles.input}
-          value={form.customer?.name ?? ""}
-          onChangeText={(text) => setForm((prev) => ({
-            ...prev,
-            customer: { ...(prev.customer || { name: "", businessName: "", email: "", address: "" }), name: text }
-          }))}
-        />
-      </View>
+      {["name", "businessName", "email", "address"].map((field) => (
+        <View key={field} style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>{field.charAt(0).toUpperCase() + field.slice(1)}:</Text>
+          <TextInput
+            style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+            value={form.customer?.[field as keyof typeof form.customer] ?? ""}
+            onChangeText={(text) =>
+              setForm((prev) => ({
+                ...prev,
+                customer: {
+                  ...(prev.customer ?? { name: "", businessName: "", email: "", address: "" }),
+                  [field]: text ?? "",
+                },
+              }))
+            }
+          />
+        </View>
+      ))}
 
-      {/* Business Name */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Business Name:</Text>
+        <Text style={[styles.label, { color: textColor }]}>Total Price:</Text>
         <TextInput
-          style={styles.input}
-          value={form.customer?.businessName ?? ""}
-          onChangeText={(text) => setForm((prev) => ({
-            ...prev,
-            customer: { ...(prev.customer || { name: "", businessName: "", email: "", address: "" }), businessName: text }
-          }))}
-        />
-      </View>
-
-      {/* Email */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          value={form.customer?.email ?? ""}
-          onChangeText={(text) => setForm((prev) => ({
-            ...prev,
-            customer: { ...(prev.customer || { name: "", businessName: "", email: "", address: "" }), email: text }
-          }))}
-        />
-      </View>
-
-      {/* Address */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Address:</Text>
-        <TextInput
-          style={styles.input}
-          value={form.customer?.address ?? ""}
-          onChangeText={(text) => setForm((prev) => ({
-            ...prev,
-            customer: { ...(prev.customer || { name: "", businessName: "", email: "", address: "" }), address: text }
-          }))}
-        />
-      </View>
-
-      {/* Total Price */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Total Price:</Text>
-        <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
           keyboardType="numeric"
           value={form.finalPrice?.toString() ?? ""}
-          onChangeText={(text) => setForm((prev) => ({
-            ...prev,
-            finalPrice: parseFloat(text) || 0
-          }))}
+          onChangeText={(text) => setForm((prev) => ({ ...prev, finalPrice: parseFloat(text) || 0 }))}
         />
       </View>
 
-      {/* Windows */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Windows:</Text>
+        <Text style={[styles.label, { color: textColor }]}>Windows:</Text>
         {quote.windows &&
           Object.entries(quote.windows).map(([type, count]) => (
-            <View key={type} style={styles.windowInput}>
-              <Text style={styles.windowLabel}>{type}:</Text>
+            <View key={type} style={styles.inputContainer}>
+              <Text style={[styles.label, { color: textColor }]}>{type}:</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
                 keyboardType="numeric"
                 value={String(form.windows?.[type] ?? count)}
                 onChangeText={(text) =>
@@ -176,85 +226,148 @@ export default function EditQuoteScreen() {
           ))}
       </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleUpdate}>
-          <Text style={styles.buttonText}>Save Changes</Text>
+      {!!form.images && form.images.length > 0 && (
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Images:</Text>
+          {form.images.map((img, index) => (
+            <View key={index} style={styles.imageContainer}>
+              <Image source={{ uri: img.imageUrl }} style={styles.imagePreview} />
+              <TextInput
+                style={[styles.input, { flex: 1, backgroundColor: inputBg, borderColor, color: textColor }]}
+                value={img.comment}
+                onChangeText={(text) => handleImageCommentChange(index, text)}
+                placeholder="Comment"
+                placeholderTextColor="#aaa"
+              />
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => handleRemoveImage(index)}>
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {Platform.OS === "web" && (
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Add New Images</Text>
+          <input type="file" multiple accept="image/*" onChange={handleFileChange} style={{ marginBottom: 10 }} />
+          {newImages.map((img, index) => (
+            <View key={index} style={styles.imageContainer}>
+              <Image source={{ uri: img.previewUrl }} style={styles.imagePreview} />
+              <TextInput
+                style={[styles.input, { flex: 1, backgroundColor: inputBg, borderColor, color: textColor }]}
+                value={img.comment}
+                onChangeText={(text) => handleNewImageCommentChange(index, text)}
+                placeholder="Comment"
+                placeholderTextColor="#aaa"
+              />
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => handleRemoveNewImage(index)}>
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={[styles.btn, { backgroundColor: "#2ecc71" }]} onPress={handleUpdate}>
+          <Text style={styles.btnText}>Save Changes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.btn, { backgroundColor: "#e74c3c" }]} onPress={handleDeleteQuote}>
+          <Text style={styles.btnText}>Delete Quote</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.btn, { backgroundColor: "#777" }]} onPress={() => router.push('/my-quotes')}>
+          <Text style={styles.btnText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/my-quotes')}>
-        <Text style={styles.backButtonText}>Cancel</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      padding: 20,
-      backgroundColor: "#f8f8f8",
-    },
-    title: {
-      fontSize: 22,
-      fontWeight: "bold",
-      textAlign: "center",
-      marginBottom: 20,
-    },
-    inputContainer: {
-      marginBottom: 15,
-    },
-    label: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: "#333",
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 8,
-      padding: 10,
-      fontSize: 16,
-      backgroundColor: "#fff",
-    },
-    windowInput: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    windowLabel: {
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-    buttonContainer: {
-      marginTop: 20,
-    },
-    saveButton: {
-      backgroundColor: "#007AFF",
-      padding: 10,
-      borderRadius: 8,
-    },
-    buttonText: {
-      color: "#fff",
-      fontWeight: "bold",
-      textAlign: "center",
-    },
-    backButton: {
-      marginTop: 20,
-      backgroundColor: "#ccc",
-      padding: 10,
-      borderRadius: 8,
-    },
-    backButtonText: {
-      textAlign: "center",
-      fontWeight: "bold",
-    },
-    errorText: {
-      textAlign: "center",
-      fontSize: 18,
-      fontWeight: "bold",
-      color: "red",
-      marginBottom: 20,
-    },
-  });
-  
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  imagePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    objectFit: 'cover',
+  },
+  removeImageButton: {
+    backgroundColor: '#e74c3c',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: 'white',
+    fontSize: 20,
+    lineHeight: 20,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginTop: 20,
+  },
+  btn: {
+    flex: 1,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  backButton: {
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 8,
+  },
+  backButtonText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+});
