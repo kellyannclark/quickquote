@@ -74,61 +74,70 @@ export default function ForgotPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f8f9fa',
     padding: 24,
-    margin: "10%",
-    marginHorizontal: "10%",
+    justifyContent: 'flex-start',
   },
+  userIconBg: {
+    backgroundColor: "#1e3a8a", // Deep blue (secondary)
+    borderRadius: 60,
+    padding: 20,
+    alignSelf: "center",
+    marginTop: 40,
+  },
+  
   userIcon: {
     alignSelf: "center",
     color: "#fff",
   },
-  userIconBg: {
-    backgroundColor: "lightgrey",
-    borderRadius: 60,
-    padding: 20,
-    alignSelf: "center",
-  },
   text: {
-    color: "black",
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: "5%",
+    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 30,
   },
   subtext: {
     color: "grey",
-    fontSize: 13,
+    fontSize: 18,
     textAlign: "center",
-    marginTop: 10,
-  },
-  inputControl: {
-    height: 44,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    borderColor: "grey",
-    borderWidth: 2,
-    fontWeight: "500",
-    color: "#222",
-    marginTop: 10,
+    marginTop: 16,
+    fontFamily: 'Roboto-Regular',
   },
   form: {
-    marginBottom: 20,
     flex: 1,
+    justifyContent: 'flex-start',
   },
+  inputControl: {
+    height: 48,
+    backgroundColor: "#fff",
+    paddingHorizontal: 24, // ⬅️ more side padding
+    borderRadius: 24,
+    borderColor: "#1e3a8a", // match your dark blue
+    borderWidth: 2,
+    fontWeight: "500",
+    color: "#000",
+    marginTop: 20,
+    alignSelf: "center", // ⬅️ centers the input
+    width: "90%",        // ⬅️ controls overall width
+  },
+  
   resetPwBtn: {
-    backgroundColor: "#38b6ff",
-    borderRadius: 20,
-    padding: 10,
-    flexDirection: "row",
+    backgroundColor: "#1e3a8a", // Deep blue (secondary)
+    borderRadius: 24,
+    paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "10%",
-    width: "60%",
-    marginHorizontal: "20%",
+    width: "90%",
+    marginHorizontal: "5%",
+    marginTop: 10,
   },
+  
   resetPwBtnText: {
-    fontSize: 14,
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
     fontWeight: "600",
-    color: "#fff",
+    color: "#ffffff",
   },
 });

@@ -270,17 +270,18 @@ export default function EditQuoteScreen() {
       )}
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={[styles.btn, { backgroundColor: "#2ecc71" }]} onPress={handleUpdate}>
-          <Text style={styles.btnText}>Save Changes</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.btn, { backgroundColor: '#2ecc71' }]} onPress={handleUpdate}>
+      <Text style={styles.btnText}>Save Changes</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.btn, { backgroundColor: "#e74c3c" }]} onPress={handleDeleteQuote}>
-          <Text style={styles.btnText}>Delete Quote</Text>
-        </TouchableOpacity>
+    <TouchableOpacity style={[styles.btn, { backgroundColor: '#e74c3c' }]} onPress={handleDeleteQuote}>
+      <Text style={styles.btnText}>Delete Quote</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.btn, { backgroundColor: "#777" }]} onPress={() => router.push('/my-quotes')}>
-          <Text style={styles.btnText}>Cancel</Text>
-        </TouchableOpacity>
+    <TouchableOpacity style={[styles.btn, { backgroundColor: '#6c757d' }]} onPress={() => router.push('/my-quotes')}>
+      <Text style={styles.btnText}>Cancel</Text>
+    </TouchableOpacity>
+
       </View>
     </ScrollView>
   );
@@ -295,23 +296,34 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
+    color: '#1e3a8a', // match brand blue
     textAlign: 'center',
+    marginBottom: 24,
   },
+  
   inputContainer: {
     marginBottom: 15,
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
-  },
+    fontFamily: 'Roboto-Regular',
+    color: '#000000',
+    marginBottom: 6,
+  }
+  ,
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
+    borderWidth: 2,
+    borderRadius: 12,
+    padding: 12,
     fontSize: 16,
+    fontFamily: 'Roboto-Regular',
+    backgroundColor: '#ffffff',
+    borderColor: '#1e3a8a',
+    color: '#000000',
   },
+  
   imageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -323,7 +335,13 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 8,
     objectFit: 'cover',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    marginRight: 10,
   },
+  
   removeImageButton: {
     backgroundColor: '#e74c3c',
     width: 30,
@@ -345,15 +363,18 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#1e3a8a',
+    marginHorizontal: 5,
   },
   btnText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
   },
   errorText: {
     textAlign: 'center',

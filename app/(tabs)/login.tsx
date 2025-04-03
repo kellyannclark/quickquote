@@ -169,18 +169,17 @@ const styles = StyleSheet.create({
     marginHorizontal: "20%",
   },
   headerImg: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     alignSelf: "center",
   },
   text: {
     fontSize: 25,
     textAlign: "center",
-    marginTop: "5%",
   },
   subtext: {
     color: "grey",
-    fontSize: 13,
+    fontSize: 15,
     textAlign: "center",
     marginTop: 10,
   },
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: "grey",
     borderWidth: 2,
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: "500",
     color: "#222",
     marginTop: 10,
@@ -205,21 +204,23 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   logBtn: {
-    backgroundColor: "#38b6ff",
+    backgroundColor: "#1e3a8a", // Deep Blue
     borderRadius: 20,
-    padding: 10,
+    padding: 14,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     marginTop: "5%",
-    width: "60%",
-    marginHorizontal: "20%",
+    width: "80%",
+    marginHorizontal: "10%",
   },
   logBtnText: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: "600",
-    color: "#fff",
+    color: "#ffffff", // White Text
+    fontFamily: "Roboto-Regular",
   },
+  
   btn: {
     flexDirection: "row",
     justifyContent: "center",

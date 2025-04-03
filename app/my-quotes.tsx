@@ -75,7 +75,7 @@ export default function MyQuotesScreen() {
       <Text style={[styles.title, { color: textColor }]}>My Quotes</Text>
 
       <TextInput
-        style={[styles.search, { borderColor, backgroundColor: '#1e1e1e', color: textColor }]}
+        style={[styles.search, { borderColor, backgroundColor: '#ffffff', color: textColor }]}
         placeholder="Search by Client Name or Quote ID"
         placeholderTextColor="#aaa"
         onChangeText={setSearch}
@@ -99,13 +99,15 @@ export default function MyQuotesScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={[styles.quoteItem, { backgroundColor: '#1e1e1e', borderColor }]}
+              style={[styles.quoteItem, { backgroundColor: '#ffffff', borderColor }]}
               onPress={() => router.push({ pathname: '/quote-detail', params: { quoteId: item.id } })}
             >
-              <Text style={[styles.quoteId, { color: textColor }]}>{item.quoteId}</Text>
-              <Text style={{ color: textColor }}>{item.customer.name}</Text>
-              <Text style={{ color: textColor }}>{item.createdAt.toLocaleDateString()}</Text>
-              <Text style={{ color: textColor }}>${item.finalPrice.toFixed(2)}</Text>
+              <Text style={styles.quoteId}>Quote ID: {item.quoteId}</Text>
+
+              <Text style={styles.quoteText}>{item.customer.name}</Text>
+              <Text style={styles.quoteText}>{item.createdAt.toLocaleDateString()}</Text>
+              <Text style={styles.quoteText}>${item.finalPrice.toFixed(2)}</Text>
+
 
               {!!item.images && item.images.length > 0 && (
                 <View style={styles.imageRow}>
@@ -128,33 +130,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#ffffff', // White background
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#000000',
     textAlign: 'center',
+    marginBottom: 20,
   },
   search: {
     borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
+    padding: 12,
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
+    backgroundColor: '#ffffff',
+    borderColor: '#1e3a8a',
+    color: '#000000',
     marginBottom: 15,
   },
   sortButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
     gap: 10,
+    marginBottom: 20,
   },
   sortButton: {
     flex: 1,
-    padding: 10,
+    paddingVertical: 12,
     borderRadius: 8,
+    backgroundColor: '#ffcc00', // Accent button
   },
   sortText: {
-    color: '#fff',
+    color: '#ffffff',
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -162,12 +171,20 @@ const styles = StyleSheet.create({
     padding: 15,
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 12,
+    backgroundColor: '#ffffff',
+    borderColor: '#1e3a8a',
   },
   quoteId: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 20,
     marginBottom: 5,
+    color: '#000000',
+  },
+  quoteText: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 20,
+    color: '#000000',
   },
   imageRow: {
     flexDirection: 'row',
@@ -182,6 +199,5 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 8,
-    objectFit: 'cover',
   },
 });

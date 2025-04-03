@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { faUserCircle } from "@fortawesome/free-regular-svg-icons"; // change here
 import {
   SafeAreaView,
   View,
@@ -65,7 +66,8 @@ export default function Signup() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.userIconBg}>
-        <FontAwesomeIcon icon={faUser} size={30} style={styles.userIcon} />
+      <FontAwesomeIcon icon={faUserCircle} style={styles.userIcon} size={60} />
+
       </View>
       <Text style={styles.text}>Sign Up</Text>
       <View style={styles.form}>
@@ -157,46 +159,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    margin: "10%",
-    marginHorizontal: "10%",
-  },
-  userIcon: {
-    alignSelf: "center",
-    color: "#fff",
+    marginHorizontal: '10%',
+    justifyContent: 'center',
   },
   userIconBg: {
-    backgroundColor: "lightgrey",
-    borderRadius: 60,
-    padding: 20,
     alignSelf: "center",
+    marginTop: 32,
+    marginBottom: 25,
   },
+  userIcon: {
+    color: '#1e3a8a',
+    fontSize: 60,
+  },
+  
   text: {
-    color: "black",
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: "5%",
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000000',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   subtext: {
-    color: "grey",
-    fontSize: 13,
-    textAlign: "center",
-    marginTop: 10,
-  },
-  inputControl: {
-    height: 44,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    borderColor: "grey",
-    borderWidth: 2,
-    fontWeight: "500",
-    color: "#222",
+    color: 'grey',
+    fontSize: 17,
+    textAlign: 'center',
     marginTop: 10,
   },
   form: {
-    marginBottom: 20,
     flex: 1,
+    marginBottom: 20,
   },
+  inputControl: {
+    height: 48,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: 'grey',
+    fontSize: 20,
+    color: '#000000',
+    marginTop: 12,
+  },
+  name: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  inputWithIcon: {
+    position: 'relative',
+    width: '48%',
+  },
+  icon: {
+    position: "absolute",
+    left: 10,
+    top: 28, // 👈 Adjusted for better vertical alignment
+    color: "grey",
+    zIndex: 1,
+  },
+  
   marginRName: {
     marginRight: 5,
     paddingLeft: 30,
@@ -205,36 +225,19 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
   },
   signUpBtn: {
-    backgroundColor: "#38b6ff",
+    backgroundColor: '#1e3a8a', // deep blue for consistency
     borderRadius: 20,
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: "10%",
-    width: "60%",
-    marginHorizontal: "20%",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '10%',
+    width: '60%',
+    marginHorizontal: '20%',
   },
   signUpBtnText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  name: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  inputWithIcon: {
-    position: "relative",
-    width: "50%",
-  },
-  icon: {
-    position: "absolute",
-    left: 10,
-    top: "65%",
-    transform: [{ translateY: -12 }],
-    color: "grey",
-    zIndex: 1,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 });

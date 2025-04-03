@@ -160,7 +160,14 @@ const CustomizeRatesScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>Customize Rates</Text>
+<View style={styles.headerContainer}>
+  <View style={styles.titleRow}>
+    <Text style={[styles.title, { color: textColor }]}>Customize Rates</Text>
+  </View>
+
+</View>
+
+
 
       {saved && (
         <View style={styles.savedBanner}>
@@ -251,13 +258,16 @@ const CustomizeRatesScreen = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
-        <Text style={styles.btnText}>Save</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonGroup}>
+  <TouchableOpacity style={styles.btn} onPress={saveRatesData}>
+    <Text style={styles.btnText}>Save</Text>
+  </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={resetDefaults}>
-        <Text style={styles.btnText}>Reset</Text>
-      </TouchableOpacity>
+  <TouchableOpacity style={[styles.btn, styles.resetBtn]} onPress={resetDefaults}>
+    <Text style={styles.resetBtnText}>Reset</Text>
+  </TouchableOpacity>
+</View>
+
     </ScrollView>
   );
 };
@@ -267,18 +277,48 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingBottom: 40,
+    backgroundColor: "#f8f9fa", // Light Gray Background
   },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  
+  
+  subtitle: {
+    fontSize: 18,
+    color: '#555',
+    fontFamily: 'Roboto-Regular',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  
+  
   title: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontFamily: "Poppins-SemiBold",
+    color: "#000000",
     textAlign: "center",
     marginBottom: 20,
     marginTop: 20,
-    fontFamily: "Poppins-SemiBold",
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  icon: {
+    fontSize: 35,
+  },
+  
   text: {
     fontSize: 16,
     fontFamily: "Poppins-Regular",
+    marginBottom: 4,
+    color: "#000000",
   },
   rowContainer: {
     flexDirection: "row",
@@ -287,59 +327,81 @@ const styles = StyleSheet.create({
   },
   halfWidthInputContainer: {
     width: "48%",
-    marginBottom: 15,
+    marginBottom: 20,
   },
   thirdWidthInputContainer: {
     width: "30%",
-    marginBottom: 15,
+    marginBottom: 20,
   },
   smallInput: {
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 8,
+    borderRadius: 8,
+    padding: 10,
     fontSize: 14,
+    fontFamily: "Roboto-Regular",
+    borderColor: "#1e3a8a",
+    backgroundColor: "#ffffff",
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
+    borderRadius: 8,
+    padding: 12,
     fontSize: 16,
+    fontFamily: "Roboto-Regular",
+    borderColor: "#1e3a8a",
+    backgroundColor: "#ffffff",
   },
   btn: {
-    borderRadius: 20,
-    padding: 10,
-    flexDirection: 'row',
+    borderColor: '#1e3a8a',
+    borderWidth: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    width: '90%',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-    width: "90%",
-    marginHorizontal: '5%',
-    backgroundColor: "#38b6ff",
+    marginBottom: 12,
+    backgroundColor: '#ffffff', // Matches outlineBtn
   },
+  
   btnText: {
-    fontSize: 16,
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
+    color: '#1e3a8a', // Deep Blue text to match the outline
     fontWeight: '600',
-    color: '#fff'
   },
+  buttonGroup: {
+    alignItems: 'center', // centers buttons inside
+    marginTop: 10,
+  },
+  
   resetBtn: {
-    backgroundColor: "red"
+    backgroundColor: '#dc3545', // red
+    borderColor: '#dc3545',     // match border
   },
+  
+  resetBtnText: {
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
+    color: '#ffffff', // white text
+    fontWeight: '600',
+  },
+  
   savedBanner: {
-    backgroundColor: '#d4edda',
-    padding: 10,
+    backgroundColor: "#fff8e1",
     borderRadius: 8,
-    marginBottom: 10,
-    borderColor: '#c3e6cb',
+    padding: 12,
     borderWidth: 1,
+    borderColor: "#ffcc00",
+    marginBottom: 16,
   },
   savedText: {
-    color: '#155724',
+    color: "#1e3a8a",
     fontSize: 14,
-    textAlign: 'center',
-    fontWeight: '500',
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
   },
 });
 

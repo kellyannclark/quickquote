@@ -160,8 +160,9 @@ export default function QuoteDetailScreen() {
       </View>
 
       <TouchableOpacity style={[styles.backButton, { backgroundColor: secondaryColor }]} onPress={() => router.push('/my-quotes')}>
-        <Text style={[styles.backButtonText, { color: textColor }]}>Go Back</Text>
-      </TouchableOpacity>
+      <Text style={styles.backButtonText}>Go Back</Text>
+    </TouchableOpacity>
+
 
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
@@ -180,11 +181,14 @@ export default function QuoteDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    backgroundColor: '#ffffff',
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
+    color: '#000000',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -192,48 +196,62 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   label: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
+    fontFamily: 'Roboto-Regular',
+    color: '#000000',
+    marginBottom: 2,
   },
   value: {
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: 'Roboto-Regular',
+    color: '#000000',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: -40,
     gap: 10,
   },
   editButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: '#1e3a8a', // deep blue
+    padding: 14,
+    borderRadius: 12,
     flex: 1,
   },
   deleteButton: {
-    backgroundColor: '#FF3B30',
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: '#dc3545', // red
+    padding: 14,
+    borderRadius: 12,
     flex: 1,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '600',
     textAlign: 'center',
   },
   backButton: {
     marginTop: 20,
-    padding: 10,
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: '#ffcc00', // gold
   },
   backButtonText: {
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 20,
+    color: '#ffffff', 
+    fontFamily: 'Roboto-Regular',
   },
+  
   errorText: {
     textAlign: 'center',
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#dc3545',
+    fontFamily: 'Roboto-Regular',
     marginBottom: 20,
   },
   imageRow: {
@@ -268,7 +286,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     borderRadius: 15,
     width: 30,
     height: 30,
