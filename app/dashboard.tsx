@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { auth, db } from "../backend/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -51,6 +52,11 @@ export default function Dashboard() {
 
       <Text style={styles.text}>Welcome, {firstName || "User"}!</Text>
 
+       {/* View Profile */}
+        <TouchableOpacity onPress={() => router.push({ pathname: './view-profile' })}>
+          <Text style={styles.subtext}>View Profile</Text>
+        </TouchableOpacity>
+
       {/* Make a Quote Button */}
       <TouchableOpacity style={[styles.createQuoteBtn, styles.btn]} onPress={() =>
         router.push({ pathname: '/make-a-quote' })}>
@@ -90,10 +96,15 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 20,
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
     marginTop: '5%'
   },
- 
+  subtext: {
+    color: '#2b93cf',
+    textAlign: 'center',
+    marginTop: '5%',
+    marginBottom: '5%',
+    fontSize: 16,
+  },
   createQuoteBtn: {
     backgroundColor: '#ffcc00',
     borderRadius: 20,
