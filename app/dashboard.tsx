@@ -64,6 +64,11 @@ export default function Dashboard() {
       <FontAwesomeIcon icon={faUserCircle} size={60} style={styles.headerIcon} />
       <Text style={styles.welcome}>Welcome, {firstName || "User"}!</Text>
   
+       {/* View Profile */}
+        <TouchableOpacity onPress={() => router.push({ pathname: './view-profile' })}>
+          <Text style={styles.subtext}>View Profile</Text>
+        </TouchableOpacity>
+
       <TouchableOpacity style={[styles.primaryBtn]} onPress={() => router.push('/make-a-quote')}>
         <Text style={styles.primaryBtnText}>Make a Quote</Text>
       </TouchableOpacity>
@@ -108,8 +113,15 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: 'Poppins-SemiBold',
     color: '#000000',
-    marginBottom: 100,
     textAlign: 'center',
+    marginTop: '5%'
+  },
+  subtext: {
+    color: '#2b93cf',
+    textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 100,
+    fontSize: 18,
   },
   primaryBtn: {
     backgroundColor: '#ffcc00',

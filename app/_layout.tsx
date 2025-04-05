@@ -5,10 +5,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import React from 'react';
-
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import React from 'react';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -46,6 +45,8 @@ export default function RootLayout() {
          <Stack.Screen name="edit-quote" options={{ title: "Edit Quote"}} />
          <Stack.Screen name="quote-detail" options={{ title: "Quote Detail"}} />
          <Stack.Screen name="make-a-quote" options={{ title: "Make a Quote"}} />
+         <Stack.Screen name="view-profile" options={{ title: "View Profile"}} />
+         <Stack.Screen name="edit-profile" options={{ title: "Edit Profile"}} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
