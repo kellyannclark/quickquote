@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: '#fff',
     flex: 1,
+    alignItems: 'center'
   },
   centered: {
     flex: 1,
@@ -116,12 +117,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#555',
     marginTop: 16,
   },
   value: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#000',
     marginTop: 4,
   },
