@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
   headerIcon: {
     color: '#1e3a8a',
     marginBottom: 25,
-    marginTop: 32,
+    marginTop: 35,
   },
   welcome: {
     fontSize: 22,
     fontFamily: 'Poppins-SemiBold',
     color: '#000000',
     textAlign: 'center',
-    marginTop: '5%'
+    marginTop: 5
   },
   subtext: {
     color: '#2b93cf',
