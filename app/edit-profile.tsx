@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 12,
   },
   input: {
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
-    fontSize: 16,
+    fontSize: 20,
     marginTop: 6,
   },
   saveButton: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
   },
 });
