@@ -93,6 +93,8 @@ export default function MakeAQuoteScreen() {
       }
     );
 
+    
+
     setTotal(totalPrice);
   }, [rates, windowCounts, quoteDetails]);
 
@@ -237,6 +239,7 @@ export default function MakeAQuoteScreen() {
       setImageUploads(prev => [...prev, ...newUploads]);
     }
   };
+
 
   const handleRemoveImage = (index: number) => {
     setImageUploads(prev => prev.filter((_, i) => i !== index));
