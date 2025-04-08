@@ -151,7 +151,7 @@ export default function Login() {
         <TouchableOpacity onPress={() => router.push({ pathname: '../signup' })}>
           <View style={styles.btn}>
             <View style={styles.regBtn}>
-              <Text>Sign Up Now</Text>
+              <Text style={styles.regBtnText}>Sign Up Now</Text>
             </View>
             <Text style={styles.regBtnArrow}>&gt;</Text>
           </View>
@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     color: "#ffffff", // White Text
-    fontFamily: "Roboto-Regular",
   },
   
   btn: {
@@ -237,14 +236,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "80%",
   },
+  regBtnText: {
+    fontSize: 20
+  },
   regBtnArrow: {
     borderTopEndRadius: 20,
     borderEndEndRadius: 20,
     borderColor: "grey",
     borderWidth: 2,
-    padding: 9,
+    padding: 10,
     fontWeight: "700",
-    fontSize: 15,
+    fontSize: 20,
   },
   googleBtn: {
     backgroundColor: "#db4437", // Google red

@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     color: '#000000',
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
     fontWeight: '600',
   },
   outlineBtn: {
@@ -152,13 +151,11 @@ const styles = StyleSheet.create({
   outlineBtnText: {
     color: '#1e3a8a',
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
     fontWeight: '600',
   },
   text: {
     color: '#000',
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
     textAlign: 'center',
   },
 
@@ -173,8 +170,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontSize: 20,
     fontWeight: '600',
   },
   
