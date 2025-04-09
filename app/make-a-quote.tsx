@@ -463,8 +463,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Roboto-Regular',
     backgroundColor: '#ffffff',
-    color: '#000000',
-    borderColor: '#1e3a8a', // Deep Blue
+    borderColor: '#1e3a8a',
+    color: "#ffffff",
   },
   switchRow: {
     flexDirection: 'row',

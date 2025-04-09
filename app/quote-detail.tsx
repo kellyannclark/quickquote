@@ -214,13 +214,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   editButton: {
-    backgroundColor: '#1e3a8a', // deep blue
+    backgroundColor: '#1e3a8a',
     padding: 14,
     borderRadius: 12,
     flex: 1,
   },
   deleteButton: {
-    backgroundColor: '#dc3545', // red
+    backgroundColor: '#dc3545',
     padding: 14,
     borderRadius: 12,
     flex: 1,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: '#ffcc00', // gold
+    backgroundColor: '#ffcc00',
   },
   backButtonText: {
     textAlign: 'center',
@@ -259,6 +259,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
     marginTop: 20,
+    marginBottom: 80,
   },
   imagePreview: {
     width: 60,
