@@ -100,10 +100,9 @@ const styles = StyleSheet.create({
   },
   subtext: {
     color: "grey",
-    fontSize: 18,
+    fontSize: 20,
     textAlign: "center",
     marginTop: 16,
-    fontFamily: 'Roboto-Regular',
   },
   form: {
     flex: 1,
@@ -119,6 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#000",
     marginTop: 20,
+    fontSize: 20,
     alignSelf: "center", // ⬅️ centers the input
     width: "90%",        // ⬅️ controls overall width
   },
@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
   
   resetPwBtnText: {
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
     fontWeight: "600",
     color: "#ffffff",
   },

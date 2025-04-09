@@ -47,6 +47,7 @@ export default function RootLayout() {
          <Stack.Screen name="make-a-quote" options={{ title: "Make a Quote"}} />
          <Stack.Screen name="view-profile" options={{ title: "View Profile"}} />
          <Stack.Screen name="edit-profile" options={{ title: "Edit Profile"}} />
+         <Stack.Screen name="forgot-password" options={{ title: "Forgot Password"}} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
