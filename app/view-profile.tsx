@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { router, useRouter } from "expo-router";
 import { TouchableOpacity } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 
 type UserProfile = {
@@ -19,6 +20,8 @@ const ViewProfileScreen = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const secondaryColor = useThemeColor(undefined, 'secondary');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -95,6 +98,10 @@ const ViewProfileScreen = () => {
 
       <Text style={styles.label}>Email:</Text>
       <Text style={styles.value}>{profile.email}</Text>
+
+      <TouchableOpacity style={[styles.backButton, { backgroundColor: secondaryColor }]} onPress={() => router.push('/dashboard')}>
+      <Text style={styles.backButtonText}>Back to Dashboard</Text>
+    </TouchableOpacity>
     </View>
   );
 };
@@ -135,6 +142,19 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     position: 'relative',
     bottom: 10
+  },
+  backButton: {
+    marginTop: 40,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: '#ffcc00',
+  },
+  backButtonText: {
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 20,
+    color: '#ffffff', 
+    
   },
   
 });
