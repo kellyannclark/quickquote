@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     marginTop: 16,
-    fontFamily: 'Roboto-Regular',
   },
   form: {
     flex: 1,
@@ -136,7 +135,6 @@ const styles = StyleSheet.create({
   
   resetPwBtnText: {
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
     fontWeight: "600",
     color: "#ffffff",
   },
