@@ -341,6 +341,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     borderColor: "#1e3a8a",
     backgroundColor: "#ffffff",
+    color: "#ffffff",
   },
   inputContainer: {
     marginBottom: 20,
@@ -353,6 +354,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     borderColor: "#1e3a8a",
     backgroundColor: "#ffffff",
+    color: "#ffffff",
   },
   btn: {
     borderColor: '#1e3a8a',
