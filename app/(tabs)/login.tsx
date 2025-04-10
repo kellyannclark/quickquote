@@ -15,16 +15,12 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useGoogleAuth } from "../../backend/GoogleAuth";
 
-
-
 export default function Login() {
   console.log("🚀 Login.tsx mounted");
   const router = useRouter();
   const quickQuoteLogo = require('../../assets/images/logo.png');
   const { promptAsync, request } = useGoogleAuth();
   const [authInProgress, setAuthInProgress] = useState(false);
-
-
 
   const [form, setForm] = useState({
     email: "",
@@ -66,19 +62,19 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     if (authInProgress || !request) return;
-  
+
     console.log("🟢 Google Sign-In button clicked (redirect)");
     setAuthInProgress(true);
-  
+
     try {
       const result = await promptAsync({
         useProxy: false,
         redirectUri: "http://localhost:8081",
         prompt: "select_account",
       } as any);
-  
+
       console.log("🔁 Google redirect login result:", result);
-  
+
       if (result.type === "success") {
         console.log("✅ Google Sign-In via redirect successful");
         // useGoogleAuth will handle Firebase
@@ -91,8 +87,8 @@ export default function Login() {
       setAuthInProgress(false);
     }
   };
-  
-  
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,7 +132,7 @@ export default function Login() {
             </Text>
           </TouchableOpacity>
         </View>
-       {/* Google Sign In Button*/}
+        {/* Google Sign In Button*/}
         <TouchableOpacity
           style={[styles.logBtn, styles.googleBtn]}
           onPress={handleGoogleLogin}
@@ -219,7 +215,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#ffffff", // White Text
   },
-  
+
   btn: {
     flexDirection: "row",
     justifyContent: "center",
@@ -255,6 +251,6 @@ const styles = StyleSheet.create({
     width: "80%",
     marginHorizontal: "10%",
   },
-  
-  
+
+
 });
