@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins-Regular",
     marginBottom: 4,
-    color: "#000000",
+    color: "#ffffff",
   },
   rowContainer: {
     flexDirection: "row",
