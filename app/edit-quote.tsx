@@ -43,8 +43,9 @@ interface WindowCounts {
   MD: number;
   LG: number;
   XL: number;
-  [key: string]: number; // Optional: Allows for additional window types
+  [key: string]: number;
 }
+
 export default function EditQuoteScreen() {
   const { quoteId } = useLocalSearchParams();
   const normalizedQuoteId = Array.isArray(quoteId) ? quoteId[0] : quoteId;
@@ -62,11 +63,9 @@ export default function EditQuoteScreen() {
   const [rates, setRates] = useState<any>(null);
   const [total, setTotal] = useState<number>(0);
 
-  // Fetch rates and quote data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch rates
         const user = auth.currentUser;
         if (user) {
           const ratesRef = doc(db, 'Rates', user.uid);
@@ -76,9 +75,7 @@ export default function EditQuoteScreen() {
           }
         }
 
-        // Fetch quote
         if (!normalizedQuoteId || typeof normalizedQuoteId !== "string") return;
-        
         const quoteRef = doc(db, "Quotes", normalizedQuoteId);
         const quoteSnap = await getDoc(quoteRef);
 
@@ -100,7 +97,6 @@ export default function EditQuoteScreen() {
     fetchData();
   }, [normalizedQuoteId]);
 
-  // Calculate total whenever relevant inputs change
   const calculateTotal = useCallback(() => {
     if (!rates || !form.windows) return;
 
@@ -110,7 +106,7 @@ export default function EditQuoteScreen() {
       MD: form.windows.MD || 0,
       LG: form.windows.LG || 0,
       XL: form.windows.XL || 0,
-      ...form.windows // Spread any additional window types
+      ...form.windows
     };
 
     const totalPrice = calculateQuoteTotal(
@@ -129,12 +125,9 @@ export default function EditQuoteScreen() {
     setForm(prev => ({ ...prev, finalPrice: totalPrice }));
   }, [rates, form.windows, form.quoteDetails]);
 
-  // Recalculate when inputs change
   useEffect(() => {
     calculateTotal();
   }, [calculateTotal]);
-
-  
 
   const handleWindowCountChange = (type: string, value: string) => {
     setForm(prev => ({
@@ -156,7 +149,41 @@ export default function EditQuoteScreen() {
     }));
   };
 
-  
+  const handleImageCommentChange = (index: number, text: string) => {
+    if (!form.images) return;
+    const updated = [...form.images];
+    updated[index].comment = text;
+    setForm((prev) => ({ ...prev, images: updated }));
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setForm((prev) => {
+      const currentImages = prev.images ?? [];
+      const updatedImages = currentImages.filter((_, i) => i !== index);
+      return { ...prev, images: updatedImages };
+    });
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const uploads: ImageUpload[] = Array.from(files).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+      comment: "",
+    }));
+    setNewImages((prev) => [...prev, ...uploads]);
+  };
+
+  const handleNewImageCommentChange = (index: number, text: string) => {
+    const updated = [...newImages];
+    updated[index].comment = text;
+    setNewImages(updated);
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleUpdate = async () => {
     if (!normalizedQuoteId || !form) return;
@@ -177,10 +204,10 @@ export default function EditQuoteScreen() {
       }
 
       const quoteRef = doc(db, "Quotes", normalizedQuoteId);
-      await updateDoc(quoteRef, { 
+      await updateDoc(quoteRef, {
         ...form,
         finalPrice: total,
-        images: updatedImages 
+        images: updatedImages
       });
       Alert.alert("Success", "Quote updated successfully.");
       router.push(`/quote-detail?quoteId=${normalizedQuoteId}`);
@@ -190,7 +217,9 @@ export default function EditQuoteScreen() {
     }
   };
 
-  // ... (keep other existing handler functions)
+  function handleDeleteQuote(event: GestureResponderEvent): void {
+    throw new Error("Function not implemented.");
+  }
 
   if (loading) {
     return (
@@ -211,21 +240,15 @@ export default function EditQuoteScreen() {
     );
   }
 
-  function handleDeleteQuote(event: GestureResponderEvent): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Edit Quote</Text>
 
-      {/* Display calculated total prominently */}
       <View style={[styles.totalContainer, { borderColor }]}>
         <Text style={[styles.totalLabel, { color: textColor }]}>Quote Total:</Text>
         <Text style={[styles.totalAmount, { color: '#2ecc71' }]}>${total.toFixed(2)}</Text>
       </View>
 
-      {/* Customer information inputs */}
       {["name", "businessName", "email", "address"].map((field) => (
         <View key={field} style={styles.inputContainer}>
           <Text style={[styles.label, { color: textColor }]}>{field.charAt(0).toUpperCase() + field.slice(1)}:</Text>
@@ -245,7 +268,6 @@ export default function EditQuoteScreen() {
         </View>
       ))}
 
-      {/* Windows inputs */}
       <View style={styles.inputContainer}>
         <Text style={[styles.label, { color: textColor }]}>Windows:</Text>
         {quote?.windows &&
@@ -262,7 +284,6 @@ export default function EditQuoteScreen() {
           ))}
       </View>
 
-      {/* Quote details */}
       <View style={styles.inputContainer}>
         <Text style={[styles.label, { color: textColor }]}>Extra Charge ($):</Text>
         <TextInput
@@ -273,7 +294,48 @@ export default function EditQuoteScreen() {
         />
       </View>
 
-      {/* ... (rest of your existing UI code) */}
+      {!!form.images && form.images.length > 0 && (
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Images:</Text>
+          {form.images.map((img, index) => (
+            <View key={index} style={styles.imageContainer}>
+              <Image source={{ uri: img.imageUrl }} style={styles.imagePreview} />
+              <TextInput
+                style={[styles.input, { flex: 1, backgroundColor: inputBg, borderColor, color: textColor }]}
+                value={img.comment}
+                onChangeText={(text) => handleImageCommentChange(index, text)}
+                placeholder="Comment"
+                placeholderTextColor="#aaa"
+              />
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => handleRemoveImage(index)}>
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {Platform.OS === "web" && (
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Add New Images</Text>
+          <input type="file" multiple accept="image/*" onChange={handleFileChange} style={{ marginBottom: 10 }} />
+          {newImages.map((img, index) => (
+            <View key={index} style={styles.imageContainer}>
+              <Image source={{ uri: img.previewUrl }} style={styles.imagePreview} />
+              <TextInput
+                style={[styles.input, { flex: 1, backgroundColor: inputBg, borderColor, color: textColor }]}
+                value={img.comment}
+                onChangeText={(text) => handleNewImageCommentChange(index, text)}
+                placeholder="Comment"
+                placeholderTextColor="#aaa"
+              />
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => handleRemoveNewImage(index)}>
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.btn, { backgroundColor: '#2ecc71' }]} onPress={handleUpdate}>
